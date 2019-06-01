@@ -1,0 +1,125 @@
+* {
+  box-sizing: border-box;
+  outline: none;
+}
+
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300);
+
+body {
+  font-family: "Open Sans";
+  font-size: 100%;
+  font-weight: 300;
+  line-height: 1.5em;
+}
+
+body {
+  height: 100%;
+  overflow: hidden;
+  font-size: 22px;
+  line-height: 2em;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+}
+
+.login {
+  display: flex;
+  flex-flow: column;
+  align-content: center;
+  justify-content: center;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.chat {
+  display: grid;
+  grid-auto-columns: 100%;
+  grid-auto-rows: 10% 60% 10%;
+  grid-template-areas: "heading" "body" "footer";
+  height: 80vh;
+}
+
+.header {
+  grid-area: heading;
+}
+
+.footer {
+  grid-area: footer;
+}
+
+.body {
+  grid-area: body;
+  display: flex;
+  flex-flow: column;
+  border: 2px dashed rgba(142, 68, 173, 1);
+  overflow: scroll;
+  margin: 6px 2px;
+}
+
+.new-msg {
+  display: flex;
+  width: 100%;
+  flex-flow: column;
+  padding: 5px 5px;
+}
+
+.msg-top {
+  grid-area: top;
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-content: center;
+}
+
+.msg-bottom {
+  display: flex;
+  flex-direction: row-reverse;
+  grid-area: bottom;
+}
+
+.from {
+}
+.time {
+  font-size: 0.5em;
+}
+
+.content {
+}
+
+.mine {
+  background: rgba(41, 128, 185, 0.5);
+}
+
+.friend {
+  background: rgba(39, 174, 96, 0.5);
+}
+
+.input {
+  width: 100%;
+  height: 60px;
+}
+
+.btn {
+  // display: inline-block;
+  padding: 0.35em 1.2em;
+  border: 0.1em solid rgba(52, 73, 94, 1);
+  margin: 0 0.3em 0.3em 0;
+  border-radius: 0.12em;
+  text-decoration: none;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  color: rgba(52, 73, 94, 1);
+  text-align: center;
+  transition: all 0.2s;
+  width: 100%;
+  cursor: pointer;
+  &:hover {
+    color: rgba(236, 240, 241, 1);
+    background-color: rgba(52, 73, 94, 1);
+  }
+}
+@media all and (max-width: 30em) {
+  .btn {
+    display: block;
+    margin: 0.4em auto;
+  }
+}

@@ -1,0 +1,121 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300);
+* {
+  box-sizing: border-box;
+  outline: none;
+}
+
+body {
+  font-family: "Open Sans";
+  font-size: 100%;
+  font-weight: 300;
+  line-height: 1.5em;
+}
+
+body {
+  height: 100%;
+  overflow: hidden;
+  font-size: 22px;
+  line-height: 2em;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+}
+
+.login {
+  display: flex;
+  flex-flow: column;
+  align-content: center;
+  justify-content: center;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.chat {
+  display: grid;
+  grid-auto-columns: 100%;
+  grid-auto-rows: 10% 60% 10%;
+  grid-template-areas: "heading" "body" "footer";
+  height: 80vh;
+}
+
+.header {
+  grid-area: heading;
+}
+
+.footer {
+  grid-area: footer;
+}
+
+.body {
+  grid-area: body;
+  display: flex;
+  flex-flow: column;
+  border: 2px dashed #8e44ad;
+  overflow: scroll;
+  margin: 6px 2px;
+}
+
+.new-msg {
+  display: flex;
+  width: 100%;
+  flex-flow: column;
+  padding: 5px 5px;
+}
+
+.msg-top {
+  grid-area: top;
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-content: center;
+}
+
+.msg-bottom {
+  display: flex;
+  flex-direction: row-reverse;
+  grid-area: bottom;
+}
+
+.time {
+  font-size: 0.5em;
+}
+
+.mine {
+  background: rgba(41, 128, 185, 0.5);
+}
+
+.friend {
+  background: rgba(39, 174, 96, 0.5);
+}
+
+.input {
+  width: 100%;
+  height: 60px;
+}
+
+.btn {
+  padding: 0.35em 1.2em;
+  border: 0.1em solid #34495e;
+  margin: 0 0.3em 0.3em 0;
+  border-radius: 0.12em;
+  text-decoration: none;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  color: #34495e;
+  text-align: center;
+  transition: all 0.2s;
+  width: 100%;
+  cursor: pointer;
+}
+.btn:hover {
+  color: #ecf0f1;
+  background-color: #34495e;
+}
+
+@media all and (max-width: 30em) {
+  .btn {
+    display: block;
+    margin: 0.4em auto;
+  }
+}
+
+/*# sourceMappingURL=/style.6d80b553.css.map */
