@@ -65,7 +65,6 @@ const Footer = {
               message: JSON.stringify(ctx)
             })
             Footer.newMsg("")
-            console.log(Footer.newMsg())
           },
           disabled: Footer.newMsg().length < 2
         },
@@ -85,7 +84,7 @@ const Login = {
       "form.login",
       {
         onsubmit: (e) => {
-          e.false
+          e.preventDefault()
         }
       },
       [
@@ -115,8 +114,10 @@ export const routes = (model) => ({
     }
   },
   "/chat": {
-    onmatch: () =>
-      model.user.name() ? m(Chat, { model }) : m.route.set("/login"),
+    onmatch: () => {
+      console.log(model.user.name())
+      return model.user.name() ? m(Chat, { model }) : m.route.set("/login")
+    },
     render: () => {
       return m(Chat, { model })
     }

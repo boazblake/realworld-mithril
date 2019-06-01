@@ -6250,7 +6250,6 @@ var Footer = {
           message: JSON.stringify(ctx)
         });
         Footer.newMsg("");
-        console.log(Footer.newMsg());
       },
       disabled: Footer.newMsg().length < 2
     }, "send")]);
@@ -6273,7 +6272,7 @@ var Login = {
     var model = _ref6.attrs.model;
     return (0, _mithril.default)("form.login", {
       onsubmit: function onsubmit(e) {
-        e.false;
+        e.preventDefault();
       }
     }, [(0, _mithril.default)("h1.h1", "Enter a username to start chatting"), (0, _mithril.default)("input.input", {
       onkeyup: function onkeyup(e) {
@@ -6300,6 +6299,7 @@ var routes = function routes(model) {
     },
     "/chat": {
       onmatch: function onmatch() {
+        console.log(model.user.name());
         return model.user.name() ? (0, _mithril.default)(Chat, {
           model: model
         }) : _mithril.default.route.set("/login");
@@ -6615,7 +6615,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58199" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59692" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
