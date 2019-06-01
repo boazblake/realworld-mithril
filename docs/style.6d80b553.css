@@ -9,11 +9,7 @@ body {
   font-size: 100%;
   font-weight: 300;
   line-height: 1.5em;
-}
-
-body {
   height: 100%;
-  overflow: hidden;
   font-size: 22px;
   line-height: 2em;
   font-weight: bold;
@@ -32,9 +28,9 @@ body {
 .chat {
   display: grid;
   grid-auto-columns: 100%;
-  grid-auto-rows: 10% 60% 10%;
+  grid-auto-rows: 15% 70% 15%;
   grid-template-areas: "heading" "body" "footer";
-  height: 80vh;
+  height: 90vh;
 }
 
 .header {
@@ -49,9 +45,10 @@ body {
   grid-area: body;
   display: flex;
   flex-flow: column;
-  border: 2px dashed #8e44ad;
+  justify-content: flex-start;
+  align-content: center;
   overflow: scroll;
-  margin: 6px 2px;
+  height: 100%;
 }
 
 .new-msg {
@@ -90,13 +87,15 @@ body {
 .input {
   width: 100%;
   height: 60px;
+  border: 1px solid #2c3e50;
+  border-radius: 0.2em;
 }
 
 .btn {
   padding: 0.35em 1.2em;
   border: 0.1em solid #34495e;
   margin: 0 0.3em 0.3em 0;
-  border-radius: 0.12em;
+  border-radius: 2em;
   text-decoration: none;
   font-family: "Roboto", sans-serif;
   font-weight: 300;
@@ -104,6 +103,7 @@ body {
   text-align: center;
   transition: all 0.2s;
   width: 100%;
+  height: 60px;
   cursor: pointer;
 }
 .btn:hover {
