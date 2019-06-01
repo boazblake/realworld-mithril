@@ -4,8 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "parcel ./index.html  --out-dir ./docs",
-    "build": "parcel build ./index.html --out-dir ./docs"
+    "dev": "parcel ./index.html --out-dir ./docs",
+    "build": "parcel build ./index.html --public-url ./ --out-dir ./docs"
   },
   "dependencies": {
     "folktale": "^2.3.2",

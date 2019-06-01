@@ -47,7 +47,8 @@ const Footer = {
     m("form.footer", {}, [
       m("input.input", {
         onkeyup: (e) => Footer.newMsg(e.target.value),
-        value: Footer.newMsg()
+        value: Footer.newMsg(),
+        placeholder: "Add message here"
       }),
       m(
         "button.btn",
@@ -80,22 +81,31 @@ const Chat = {
 
 const Login = {
   view: ({ attrs: { model } }) =>
-    m("form.login", [
-      m("h1.h1", "Enter a username to start chatting"),
-      m("input.input", {
-        onkeyup: (e) => model.user.name(e.target.value)
-      }),
-      m(
-        "button.btn",
-        {
-          onclick: () => {
-            m.route.set("/chat")
+    m(
+      "form.login",
+      {
+        onsubmit: (e) => {
+          e.false
+        }
+      },
+      [
+        m("h1.h1", "Enter a username to start chatting"),
+        m("input.input", {
+          onkeyup: (e) => model.user.name(e.target.value),
+          placeholder: "minimum 2 letters"
+        }),
+        m(
+          "button.btn",
+          {
+            onclick: () => {
+              m.route.set("/chat")
+            },
+            disabled: model.user.name().length < 3
           },
-          disabled: model.user.name().length < 3
-        },
-        "login"
-      )
-    ])
+          "login"
+        )
+      ]
+    )
 }
 
 export const routes = (model) => ({

@@ -6235,7 +6235,8 @@ var Footer = {
       onkeyup: function onkeyup(e) {
         return Footer.newMsg(e.target.value);
       },
-      value: Footer.newMsg()
+      value: Footer.newMsg(),
+      placeholder: "Add message here"
     }), (0, _mithril.default)("button.btn", {
       onclick: function onclick(e) {
         var ctx = {
@@ -6270,10 +6271,15 @@ var Chat = {
 var Login = {
   view: function view(_ref6) {
     var model = _ref6.attrs.model;
-    return (0, _mithril.default)("form.login", [(0, _mithril.default)("h1.h1", "Enter a username to start chatting"), (0, _mithril.default)("input.input", {
+    return (0, _mithril.default)("form.login", {
+      onsubmit: function onsubmit(e) {
+        e.false;
+      }
+    }, [(0, _mithril.default)("h1.h1", "Enter a username to start chatting"), (0, _mithril.default)("input.input", {
       onkeyup: function onkeyup(e) {
         return model.user.name(e.target.value);
-      }
+      },
+      placeholder: "minimum 2 letters"
     }), (0, _mithril.default)("button.btn", {
       onclick: function onclick() {
         _mithril.default.route.set("/chat");
@@ -6574,7 +6580,6 @@ var model = {
 model.chat.addListener({
   message: function message(_ref) {
     var _message = _ref.message;
-    console.log(_message);
     model.msgs.push(JSON.parse(_message));
 
     _mithril.default.redraw();
@@ -6610,7 +6615,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53881" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56418" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

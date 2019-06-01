@@ -23,7 +23,6 @@ const model = {
 
 model.chat.addListener({
   message: ({ message }) => {
-    console.log(message)
     model.msgs.push(JSON.parse(message))
     m.redraw()
   }
