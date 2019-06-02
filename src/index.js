@@ -13,6 +13,7 @@ var pubnub = new PubNub({
 pubnub.subscribe({ channels: ["mithril-chat"] })
 
 const model = {
+  toggleMenu: Stream(false),
   chat: pubnub,
   user: {
     name: Stream(""),

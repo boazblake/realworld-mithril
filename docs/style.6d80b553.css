@@ -9,11 +9,32 @@ body {
   font-size: 100%;
   font-weight: 300;
   line-height: 1.5em;
-  height: 100%;
+  height: 100vh;
   font-size: 22px;
   line-height: 2em;
   font-weight: bold;
   -webkit-font-smoothing: antialiased;
+}
+
+.btn {
+  padding: 0.35em 1.2em;
+  border: 0.05em solid #34495e;
+  margin: 0.2em 0.3em 0.3em 0;
+  border-radius: 2em;
+  text-decoration: none;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-size: 20px;
+  color: #34495e;
+  text-align: center;
+  transition: all 0.2s;
+  width: 100%;
+  height: 60px;
+  cursor: pointer;
+}
+.btn:hover {
+  color: #ecf0f1;
+  background-color: #34495e;
 }
 
 .login {
@@ -26,6 +47,7 @@ body {
 }
 
 .chat {
+  position: relative;
   display: grid;
   grid-auto-columns: 100%;
   grid-auto-rows: 15% 70% 15%;
@@ -35,6 +57,31 @@ body {
 
 .header {
   grid-area: heading;
+  display: flex;
+  flex-flow: row;
+  justify-content: flex-end;
+  cursor: pointer;
+}
+
+.menu {
+  position: absolute;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-around;
+  align-content: center;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  background: #2c3e50;
+}
+.menu .code {
+  color: white;
+}
+
+.hamburger {
+  width: 100px;
+  margin: 0 !important;
+  align-self: center;
 }
 
 .footer {
@@ -89,26 +136,6 @@ body {
   height: 60px;
   border: 1px solid #2c3e50;
   border-radius: 0.2em;
-}
-
-.btn {
-  padding: 0.35em 1.2em;
-  border: 0.1em solid #34495e;
-  margin: 0 0.3em 0.3em 0;
-  border-radius: 2em;
-  text-decoration: none;
-  font-family: "Roboto", sans-serif;
-  font-weight: 300;
-  color: #34495e;
-  text-align: center;
-  transition: all 0.2s;
-  width: 100%;
-  height: 60px;
-  cursor: pointer;
-}
-.btn:hover {
-  color: #ecf0f1;
-  background-color: #34495e;
 }
 
 @media all and (max-width: 30em) {

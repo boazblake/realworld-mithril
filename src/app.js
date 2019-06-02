@@ -19,9 +19,25 @@ const NewMsg = {
     )
 }
 
-const Header = {
+const Hamburger = {
   view: ({ attrs: { model } }) =>
-    m(".header", {}, [
+    m(
+      "button.hamburger.btn",
+      {
+        onclick: () => model.toggleMenu(!model.toggleMenu())
+      },
+      model.toggleMenu() ? "X" : "menu"
+    )
+}
+
+const Menu = {
+  view: ({ attrs: { model } }) =>
+    m(".menu", {}, [
+      m(Hamburger, { model }),
+      m(
+        "code.code",
+        "Proof of concept app for chat built in mithril and using pubnub"
+      ),
       m(
         "button.btn",
         {
@@ -34,6 +50,11 @@ const Header = {
       )
     ])
 }
+
+const Header = {
+  open: false,
+  view: ({ attrs: { model } }) => m(".header", {}, [m(Hamburger, { model })])
+}
 const Body = {
   view: ({ attrs: { model } }) =>
     m(
@@ -43,11 +64,11 @@ const Body = {
 }
 const Footer = {
   newMsg: Stream(""),
-  view: ({ attrs: { model } }) =>
+  view: ({ state, attrs: { model } }) =>
     m("form.footer", {}, [
       m("input.input", {
-        onkeyup: (e) => Footer.newMsg(e.target.value),
-        value: Footer.newMsg(),
+        onkeyup: (e) => state.newMsg(e.target.value),
+        value: state.newMsg(),
         placeholder: "Add message here"
       }),
       m(
@@ -57,16 +78,16 @@ const Footer = {
             let ctx = {
               id: model.user.id(),
               from: model.user.name(),
-              msg: Footer.newMsg(),
+              msg: state.newMsg(),
               time: MT()
             }
             model.chat.publish({
               channel: "mithril-chat",
               message: JSON.stringify(ctx)
             })
-            Footer.newMsg("")
+            state.newMsg("")
           },
-          disabled: Footer.newMsg().length < 2
+          disabled: state.newMsg().length < 2
         },
         "send"
       )
@@ -75,7 +96,13 @@ const Footer = {
 
 const Chat = {
   view: ({ attrs: { model } }) =>
-    m(".chat", m(Header, { model }), m(Body, { model }), m(Footer, { model }))
+    m(
+      ".chat",
+      m(Header, { model }),
+      model.toggleMenu() && m(Menu, { model }),
+      m(Body, { model }),
+      m(Footer, { model })
+    )
 }
 
 const Login = {
@@ -115,7 +142,6 @@ export const routes = (model) => ({
   },
   "/chat": {
     onmatch: () => {
-      console.log(model.user.name())
       return model.user.name() ? m(Chat, { model }) : m.route.set("/login")
     },
     render: () => {

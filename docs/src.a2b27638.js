@@ -6203,10 +6203,22 @@ var NewMsg = {
     }, [(0, _mithril.default)(".msg-top", [(0, _mithril.default)(".from", msg.from), (0, _mithril.default)(".time", (0, _moment.default)(msg.time).fromNow())]), (0, _mithril.default)(".msg-bottom", (0, _mithril.default)("code.content", msg.msg))]);
   }
 };
-var Header = {
+var Hamburger = {
   view: function view(_ref2) {
     var model = _ref2.attrs.model;
-    return (0, _mithril.default)(".header", {}, [(0, _mithril.default)("button.btn", {
+    return (0, _mithril.default)("button.hamburger.btn", {
+      onclick: function onclick() {
+        return model.toggleMenu(!model.toggleMenu());
+      }
+    }, model.toggleMenu() ? "X" : "menu");
+  }
+};
+var Menu = {
+  view: function view(_ref3) {
+    var model = _ref3.attrs.model;
+    return (0, _mithril.default)(".menu", {}, [(0, _mithril.default)(Hamburger, {
+      model: model
+    }), (0, _mithril.default)("code.code", "Proof of concept app for chat built in mithril and using pubnub"), (0, _mithril.default)("button.btn", {
       onclick: function onclick() {
         model.user.name("");
 
@@ -6215,9 +6227,18 @@ var Header = {
     }, "logout")]);
   }
 };
+var Header = {
+  open: false,
+  view: function view(_ref4) {
+    var model = _ref4.attrs.model;
+    return (0, _mithril.default)(".header", {}, [(0, _mithril.default)(Hamburger, {
+      model: model
+    })]);
+  }
+};
 var Body = {
-  view: function view(_ref3) {
-    var model = _ref3.attrs.model;
+  view: function view(_ref5) {
+    var model = _ref5.attrs.model;
     return (0, _mithril.default)(".body", model.msgs.map(function (msg, idx) {
       return (0, _mithril.default)(NewMsg, {
         key: idx,
@@ -6229,36 +6250,39 @@ var Body = {
 };
 var Footer = {
   newMsg: (0, _mithrilStream.default)(""),
-  view: function view(_ref4) {
-    var model = _ref4.attrs.model;
+  view: function view(_ref6) {
+    var state = _ref6.state,
+        model = _ref6.attrs.model;
     return (0, _mithril.default)("form.footer", {}, [(0, _mithril.default)("input.input", {
       onkeyup: function onkeyup(e) {
-        return Footer.newMsg(e.target.value);
+        return state.newMsg(e.target.value);
       },
-      value: Footer.newMsg(),
+      value: state.newMsg(),
       placeholder: "Add message here"
     }), (0, _mithril.default)("button.btn", {
       onclick: function onclick(e) {
         var ctx = {
           id: model.user.id(),
           from: model.user.name(),
-          msg: Footer.newMsg(),
+          msg: state.newMsg(),
           time: (0, _moment.default)()
         };
         model.chat.publish({
           channel: "mithril-chat",
           message: JSON.stringify(ctx)
         });
-        Footer.newMsg("");
+        state.newMsg("");
       },
-      disabled: Footer.newMsg().length < 2
+      disabled: state.newMsg().length < 2
     }, "send")]);
   }
 };
 var Chat = {
-  view: function view(_ref5) {
-    var model = _ref5.attrs.model;
+  view: function view(_ref7) {
+    var model = _ref7.attrs.model;
     return (0, _mithril.default)(".chat", (0, _mithril.default)(Header, {
+      model: model
+    }), model.toggleMenu() && (0, _mithril.default)(Menu, {
       model: model
     }), (0, _mithril.default)(Body, {
       model: model
@@ -6268,8 +6292,8 @@ var Chat = {
   }
 };
 var Login = {
-  view: function view(_ref6) {
-    var model = _ref6.attrs.model;
+  view: function view(_ref8) {
+    var model = _ref8.attrs.model;
     return (0, _mithril.default)("form.login", {
       onsubmit: function onsubmit(e) {
         e.preventDefault();
@@ -6299,7 +6323,6 @@ var routes = function routes(model) {
     },
     "/chat": {
       onmatch: function onmatch() {
-        console.log(model.user.name());
         return model.user.name() ? (0, _mithril.default)(Chat, {
           model: model
         }) : _mithril.default.route.set("/login");
@@ -6570,6 +6593,7 @@ pubnub.subscribe({
   channels: ["mithril-chat"]
 });
 var model = {
+  toggleMenu: (0, _mithrilStream.default)(false),
   chat: pubnub,
   user: {
     name: (0, _mithrilStream.default)(""),
@@ -6615,7 +6639,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60878" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58796" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
