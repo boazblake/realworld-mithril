@@ -7,10 +7,7 @@
 
 body {
   font-family: "Open Sans";
-  font-size: 100%;
   font-weight: 300;
-  line-height: 1.5em;
-  height: 100vh;
   font-size: 22px;
   line-height: 2em;
   font-weight: bold;
@@ -25,8 +22,7 @@ body {
   text-decoration: none;
   font-family: "Roboto", sans-serif;
   font-weight: 300;
-  font-size: 20px;
-  color: rgba(52, 73, 94, 1);
+  font-size: 30px;
   text-align: center;
   transition: all 0.2s;
   width: 100%;
@@ -53,7 +49,6 @@ body {
   grid-auto-columns: 100%;
   grid-auto-rows: 15% 70% 15%;
   grid-template-areas: "heading" "body" "footer";
-  height: 90vh;
 }
 
 .header {
@@ -64,8 +59,10 @@ body {
   cursor: pointer;
 }
 
-.menu {
+.nav {
   position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
   flex-flow: column;
   justify-content: space-around;
@@ -76,6 +73,7 @@ body {
   background: rgba(44, 62, 80, 1);
 
   .code {
+    padding: 40px;
     color: white;
   }
 }
@@ -84,6 +82,7 @@ body {
   width: 100px;
   margin: 0 !important;
   align-self: center;
+  z-index: 11;
 }
 
 .footer {
@@ -97,7 +96,7 @@ body {
   justify-content: flex-start;
   align-content: center;
   overflow: scroll;
-  height: 100%;
+  height: 40vh;
 }
 
 .new-msg {
@@ -131,11 +130,11 @@ body {
 }
 
 .mine {
-  background: rgba(41, 128, 185, 0.5);
+  color: rgba(142, 68, 173, 1);
 }
 
 .friend {
-  background: rgba(39, 174, 96, 0.5);
+  color: rgba(22, 160, 133, 1);
 }
 
 .input {
@@ -143,6 +142,8 @@ body {
   height: 60px;
   border: 1px solid rgba(44, 62, 80, 1);
   border-radius: 0.2em;
+  font-size: 1.2em;
+  padding: 0 12px;
 }
 
 @media all and (max-width: 30em) {

@@ -6208,17 +6208,15 @@ var Hamburger = {
     var model = _ref2.attrs.model;
     return (0, _mithril.default)("button.hamburger.btn", {
       onclick: function onclick() {
-        return model.toggleMenu(!model.toggleMenu());
+        return model.toggleNav(!model.toggleNav());
       }
-    }, model.toggleMenu() ? "X" : "menu");
+    }, model.toggleNav() ? "X" : _mithril.default.trust("&#9776"));
   }
 };
-var Menu = {
+var Nav = {
   view: function view(_ref3) {
     var model = _ref3.attrs.model;
-    return (0, _mithril.default)(".menu", {}, [(0, _mithril.default)(Hamburger, {
-      model: model
-    }), (0, _mithril.default)("code.code", "Proof of concept app for chat built in mithril and using pubnub"), (0, _mithril.default)("button.btn", {
+    return (0, _mithril.default)(".nav", {}, [(0, _mithril.default)("code.code", "Proof of concept app for chat built in mithril and using pubnub"), (0, _mithril.default)("button.btn", {
       onclick: function onclick() {
         model.user.name("");
 
@@ -6277,14 +6275,21 @@ var Footer = {
     }, "send")]);
   }
 };
-var Chat = {
+var Layout = {
   view: function view(_ref7) {
-    var model = _ref7.attrs.model;
-    return (0, _mithril.default)(".chat", (0, _mithril.default)(Header, {
+    var children = _ref7.children,
+        model = _ref7.attrs.model;
+    return [(0, _mithril.default)(Header, {
       model: model
-    }), model.toggleMenu() && (0, _mithril.default)(Menu, {
+    }), model.toggleNav() && (0, _mithril.default)(Nav, {
       model: model
-    }), (0, _mithril.default)(Body, {
+    }), children];
+  }
+};
+var Chat = {
+  view: function view(_ref8) {
+    var model = _ref8.attrs.model;
+    return (0, _mithril.default)(".chat", (0, _mithril.default)(Body, {
       model: model
     }), (0, _mithril.default)(Footer, {
       model: model
@@ -6292,8 +6297,8 @@ var Chat = {
   }
 };
 var Login = {
-  view: function view(_ref8) {
-    var model = _ref8.attrs.model;
+  view: function view(_ref9) {
+    var model = _ref9.attrs.model;
     return (0, _mithril.default)("form.login", {
       onsubmit: function onsubmit(e) {
         e.preventDefault();
@@ -6323,14 +6328,18 @@ var routes = function routes(model) {
     },
     "/chat": {
       onmatch: function onmatch() {
-        return model.user.name() ? (0, _mithril.default)(Chat, {
+        return model.user.name() ? (0, _mithril.default)(Layout, {
           model: model
-        }) : _mithril.default.route.set("/login");
+        }, (0, _mithril.default)(Chat, {
+          model: model
+        })) : _mithril.default.route.set("/login");
       },
       render: function render() {
-        return (0, _mithril.default)(Chat, {
+        return (0, _mithril.default)(Layout, {
           model: model
-        });
+        }, (0, _mithril.default)(Chat, {
+          model: model
+        }));
       }
     }
   };
@@ -6593,7 +6602,7 @@ pubnub.subscribe({
   channels: ["mithril-chat"]
 });
 var model = {
-  toggleMenu: (0, _mithrilStream.default)(false),
+  toggleNav: (0, _mithrilStream.default)(false),
   chat: pubnub,
   user: {
     name: (0, _mithrilStream.default)(""),
@@ -6639,7 +6648,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58796" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56038" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

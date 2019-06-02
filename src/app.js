@@ -24,16 +24,15 @@ const Hamburger = {
     m(
       "button.hamburger.btn",
       {
-        onclick: () => model.toggleMenu(!model.toggleMenu())
+        onclick: () => model.toggleNav(!model.toggleNav())
       },
-      model.toggleMenu() ? "X" : "menu"
+      model.toggleNav() ? "X" : m.trust(`&#9776`)
     )
 }
 
-const Menu = {
+const Nav = {
   view: ({ attrs: { model } }) =>
-    m(".menu", {}, [
-      m(Hamburger, { model }),
+    m(".nav", {}, [
       m(
         "code.code",
         "Proof of concept app for chat built in mithril and using pubnub"
@@ -94,15 +93,17 @@ const Footer = {
     ])
 }
 
+const Layout = {
+  view: ({ children, attrs: { model } }) => [
+    m(Header, { model }),
+    model.toggleNav() && m(Nav, { model }),
+    children
+  ]
+}
+
 const Chat = {
   view: ({ attrs: { model } }) =>
-    m(
-      ".chat",
-      m(Header, { model }),
-      model.toggleMenu() && m(Menu, { model }),
-      m(Body, { model }),
-      m(Footer, { model })
-    )
+    m(".chat", m(Body, { model }), m(Footer, { model }))
 }
 
 const Login = {
@@ -142,10 +143,12 @@ export const routes = (model) => ({
   },
   "/chat": {
     onmatch: () => {
-      return model.user.name() ? m(Chat, { model }) : m.route.set("/login")
+      return model.user.name()
+        ? m(Layout, { model }, m(Chat, { model }))
+        : m.route.set("/login")
     },
     render: () => {
-      return m(Chat, { model })
+      return m(Layout, { model }, m(Chat, { model }))
     }
   }
 })
