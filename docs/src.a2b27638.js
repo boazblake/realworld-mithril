@@ -6251,7 +6251,7 @@ var Footer = {
   view: function view(_ref6) {
     var state = _ref6.state,
         model = _ref6.attrs.model;
-    return (0, _mithril.default)("form.footer", {}, [(0, _mithril.default)("input.input", {
+    return (0, _mithril.default)("form.footer", {}, [(0, _mithril.default)("textarea.input", {
       onkeyup: function onkeyup(e) {
         return state.newMsg(e.target.value);
       },
@@ -6648,7 +6648,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56038" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60630" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

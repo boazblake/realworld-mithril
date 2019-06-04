@@ -41,6 +41,9 @@ body {
   width: 80%;
   margin: 0 auto;
 }
+.login > .input {
+  height: 60px;
+}
 
 .chat {
   position: relative;
@@ -81,6 +84,12 @@ body {
   margin: 0 !important;
   align-self: center;
   z-index: 11;
+  background: none !important;
+  border: none !important;
+  color: #d35400;
+}
+.hamburger:hover {
+  color: #2c3e50;
 }
 
 .footer {
@@ -122,6 +131,10 @@ body {
   font-size: 0.5em;
 }
 
+.content {
+  word-break: break-word;
+}
+
 .mine {
   color: #8e44ad;
 }
@@ -132,17 +145,22 @@ body {
 
 .input {
   width: 100%;
-  height: 60px;
+  height: 120px;
   border: 1px solid #2c3e50;
   border-radius: 0.2em;
   font-size: 1.2em;
   padding: 0 12px;
 }
 
-@media all and (max-width: 30em) {
-  .btn {
-    display: block;
-    margin: 0.4em auto;
+@media screen and (min-width: 351px) {
+  .footer {
+    width: 80%;
+    margin: 0 auto;
+  }
+
+  .body > .new-msg {
+    width: 80%;
+    margin: 0 auto;
   }
 }
 

@@ -65,7 +65,7 @@ const Footer = {
   newMsg: Stream(""),
   view: ({ state, attrs: { model } }) =>
     m("form.footer", {}, [
-      m("input.input", {
+      m("textarea.input", {
         onkeyup: (e) => state.newMsg(e.target.value),
         value: state.newMsg(),
         placeholder: "Add message here"
