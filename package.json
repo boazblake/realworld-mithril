@@ -4,20 +4,23 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "parcel ./index.html --out-dir ./docs",
-    "build": "parcel build ./index.html --public-url ./ --out-dir ./docs"
+    "start": "brunch watch --server",
+    "build": "brunch build --production"
   },
   "dependencies": {
-    "folktale": "^2.3.2",
     "mithril": "^1.1.6",
     "mithril-stream": "^2.0.0",
     "moment": "^2.24.0",
-    "pubnub": "^4.24.0",
+    "pubnub": "^4.27.3",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "eslint": "^5.16.0",
-    "parcel": "^1.12.3",
-    "sass": "^1.20.3"
+    "@babel/plugin-transform-spread": "^7.7.4",
+    "auto-reload-brunch": "^2.7.1",
+    "babel-brunch": "7.0.1",
+    "brunch": "^2.10.17",
+    "clean-css-brunch": "^2.10.0",
+    "sass-brunch": "https://github.com/brunch/sass-brunch.git#b21b27f6329c2ec30659daa0835db214dde708b0",
+    "uglify-js-brunch": "^2.10.0"
   }
 }
