@@ -18,6 +18,7 @@ exports.files = {
 
 exports.plugins = {
   sass: {
+    precision: 8,
     mode: "native",
     sourceMapEmbed: true,
     includePaths: ["node_modules/spectre.css/src/**/*.scss"]
@@ -33,6 +34,7 @@ exports.plugins = {
   },
   copycat: {
     // fonts: [
+    //   "node_modules/@mithril-icons/clarity/cjs"
     //   "bower_components/material-design-iconic-font",
     //   "bower_components/font-awesome/fonts"
     // ],
@@ -61,6 +63,7 @@ exports.paths = {
 }
 
 exports.npm = {
+  enabled: true,
   globals: { m: "mithril", Stream: "mithril-stream" },
   styles: {
     "spectre.css": [

@@ -13,6 +13,7 @@
     "build": "pnpm run build:pre && brunch build --production"
   },
   "dependencies": {
+    "@mithril-icons/clarity": "^1.2.0",
     "mithril": "^1.1.6",
     "mithril-stream": "^2.0.0",
     "spectre.css": "^0.5.8"

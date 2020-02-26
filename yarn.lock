@@ -708,6 +708,11 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@mithril-icons/clarity@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@mithril-icons/clarity/-/clarity-1.2.0.tgz#4f49871db482a16c1333358ee6610d4000b04300"
+  integrity sha512-mOcsgFT4mj2qRDJfabtwGvAp58N5MpZawD8yJ0z6rp3JO5ULwP375+5sIKLL3AevTamtFJJE/hL/wdsHv3IykQ==
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"

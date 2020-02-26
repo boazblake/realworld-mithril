@@ -1,33 +1,35 @@
 const AddCard = ({ attrs: { mdl } }) => {
   const state = {
-    name: undefined,
-    back: mdl.back,
-    front: mdl.front
+    name: mdl.card.name,
+    back: mdl.card.back,
+    front: mdl.card.front
   }
 
   const takeImage = (side, mdl) => m.route.set("/picture", { mdl, side })
 
   const saveIdCard = (idCard) => {
     mdl.idCards.push(idCard)
+
     m.route.set("/home")
   }
 
   return {
     view: ({ attrs: { mdl } }) =>
       m(".container.columns", [
-        m("", [
+        m(".form-group", [
           m("label", "NAME: "),
           m("input", {
             type: "text",
-            oninput: (e) => (state.name = e.target.value)
+            value: state.name,
+            oninput: (e) => (mdl.card.name = e.target.value)
           })
         ]),
         m(
           ".column.col-12",
           state.front
             ? m("img", { src: state.front.src })
-            : m(".empty", { onclick: (e) => takeImage("front", mdl) }, [
-                m("Camera"),
+            : m(".card.empty", { onclick: (e) => takeImage("front", mdl) }, [
+                m(".icon icon-photo"),
                 m("p", "Add Front")
               ])
         ),
@@ -35,12 +37,12 @@ const AddCard = ({ attrs: { mdl } }) => {
           ".column.col-12",
           state.back
             ? m("img", { src: state.back.src })
-            : m(".empty", { onclick: () => takeImage("back", mdl) }, [
-                m("Camera"),
+            : m(".card.empty", { onclick: () => takeImage("back", mdl) }, [
+                m(".icon icon-photo"),
                 m("p", "Add Back")
               ])
         ),
-        m("button", { onclick: (e) => saveIdCard(state) }, "SAVE")
+        m("button.btn.btn-lg", { onclick: (e) => saveIdCard(state) }, "SAVE")
       ])
   }
 }

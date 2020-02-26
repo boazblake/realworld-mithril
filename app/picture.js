@@ -1,15 +1,14 @@
-const initCam = (v) => {
+const initCam = (video, mdl) => {
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    // Not adding `{ audio: true }` since we only want video now
     navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-      //video.src = window.URL.createObjectURL(stream);
-      v.srcObject = stream
-      v.play()
+      mdl.stream = stream
+      video.srcObject = stream
+      video.play()
     })
   }
 }
 
-const draw = (mdl, side) => {
+const draw = (mdl) => {
   let video = document.getElementById("video")
   let image = new Image()
   document
@@ -17,7 +16,7 @@ const draw = (mdl, side) => {
     .getContext("2d")
     .drawImage(video, 0, 0, 640, 480)
   image.src = document.getElementById("canvas").toDataURL("image/png")
-  mdl[mdl.side] = image
+  mdl.card[mdl.side] = image
   m.route.set("/addcard")
 }
 
@@ -27,13 +26,22 @@ const Picture = () => {
       m(".container", [
         m("video", {
           id: "video",
-          oncreate: ({ dom }) => initCam(dom),
+          oncreate: ({ dom }) => initCam(dom, mdl),
           width: 640,
           height: 480
         }),
-        m("canvas", { id: "canvas", width: 640, height: 480 }),
+        m("canvas", {
+          style: { display: "none" },
+          id: "canvas",
+          width: 640,
+          height: 480
+        }),
         m("button", { onclick: () => draw(mdl) }, "Save")
-      ])
+      ]),
+    onremove: ({ attrs: { mdl } }) =>
+      mdl.stream.getTracks().forEach((t) => {
+        t.stop()
+      })
   }
 }
 
