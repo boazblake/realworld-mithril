@@ -15,7 +15,7 @@ const draw = (mdl) => {
     .getElementById("canvas")
     .getContext("2d")
     .drawImage(video, 0, 0, 640, 480)
-  image.src = document.getElementById("canvas").toDataURL("image/png")
+  image.src = document.getElementById("canvas").toDataURL("image/webp")
   mdl.card[mdl.side] = image
   m.route.set("/addcard")
 }
@@ -28,7 +28,9 @@ const Picture = () => {
           id: "video",
           oncreate: ({ dom }) => initCam(dom, mdl),
           width: 640,
-          height: 480
+          height: 480,
+          autoplay: true,
+          playsinline: true
         }),
         m("canvas", {
           style: { display: "none" },
