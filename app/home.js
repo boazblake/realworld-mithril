@@ -1,5 +1,3 @@
-import { Camera } from "@mithril-icons/feather/cjs"
-
 const IdCards = () => {
   return {
     view: ({ attrs: { mdl, card } }) => {
@@ -26,7 +24,7 @@ const Home = ({ attrs: { mdl } }) => {
         mdl.idCards.length > 0
           ? mdl.idCards.map((card) => m(IdCards, { mdl, card }))
           : m("button.empty.col-12", { onclick: AddCard }, [
-              m(Camera),
+              m("Camera"),
               m("p", "Add a New Card")
             ])
       )

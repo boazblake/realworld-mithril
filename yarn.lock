@@ -708,11 +708,6 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@mithril-icons/feather@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@mithril-icons/feather/-/feather-1.1.0.tgz#a258e638ae833a01ff8ecca322c55f08298934b0"
-  integrity sha512-NNB5j5NYMhAuPnftcejc51yjNHxWDg+ayL131BzVyZt0q/whDJADpD7QbbWA9uAOP/QVR+kc5UoeKNDbDwURMw==
-
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"

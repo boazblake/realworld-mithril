@@ -1,5 +1,3 @@
-import { Camera } from "@mithril-icons/feather/cjs"
-
 const AddCard = ({ attrs: { mdl } }) => {
   const state = {
     name: undefined,
@@ -29,7 +27,7 @@ const AddCard = ({ attrs: { mdl } }) => {
           state.front
             ? m("img", { src: state.front.src })
             : m(".empty", { onclick: (e) => takeImage("front", mdl) }, [
-                m(Camera),
+                m("Camera"),
                 m("p", "Add Front")
               ])
         ),
@@ -38,7 +36,7 @@ const AddCard = ({ attrs: { mdl } }) => {
           state.back
             ? m("img", { src: state.back.src })
             : m(".empty", { onclick: () => takeImage("back", mdl) }, [
-                m(Camera),
+                m("Camera"),
                 m("p", "Add Back")
               ])
         ),
