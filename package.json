@@ -1,18 +1,22 @@
 {
-  "name": "chat",
+  "name": "id-cards",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "clean": "rm -rf ./docs && rm -rf ./node_modules",
+    "clean-start": "rm -rf docs && pnpm run start",
+    "fresh": "pnpm run clean && pnpm install && pnpm run start",
+    "debug": "export LOGGY_STACKS=1 && pnpm run start",
     "start": "brunch watch --server",
-    "build": "brunch build --production"
+    "build:pre": "rm -rf docs",
+    "build": "pnpm run build:pre && brunch build --production"
   },
   "dependencies": {
+    "@mithril-icons/feather": "^1.1.0",
     "mithril": "^1.1.6",
     "mithril-stream": "^2.0.0",
-    "moment": "^2.24.0",
-    "pubnub": "^4.27.3",
-    "uuid": "^3.3.2"
+    "spectre.css": "^0.5.8"
   },
   "devDependencies": {
     "@babel/plugin-transform-spread": "^7.7.4",
@@ -20,7 +24,10 @@
     "babel-brunch": "7.0.1",
     "brunch": "^2.10.17",
     "clean-css-brunch": "^2.10.0",
+    "copycat-brunch": "^1.1.1",
+    "imagemin-brunch": "^1.1.0",
     "sass-brunch": "https://github.com/brunch/sass-brunch.git#b21b27f6329c2ec30659daa0835db214dde708b0",
+    "sw-precache-brunch": "^2.0.1",
     "uglify-js-brunch": "^2.10.0"
   }
 }

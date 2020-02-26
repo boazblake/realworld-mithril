@@ -1,154 +1,37 @@
-import m from "mithril"
-import Stream from "mithril-stream"
-import MT from "moment"
+import Layout from "./layout.js"
+import Home from "./home.js"
+import AddCard from "./addcard.js"
+import Card from "./card.js"
+import Picture from "./picture.js"
 
-const NewMsg = {
-  view: ({ attrs: { msg, model } }) =>
-    m(
-      `.new-msg ${model.user.id() == msg.id ? "mine" : "friend"}`,
-      {
-        onclick: () => (model.current = msg)
+const routes = (mdl) => {
+  return {
+    "/home": {
+      onmatch: () => {
+        mdl.page = "ID Cards"
       },
-      [
-        m(".msg-top", [
-          m(".from", msg.from),
-          m(".time", MT(msg.time).fromNow())
-        ]),
-        m(".msg-bottom", m("code.content", msg.msg))
-      ]
-    )
-}
-
-const Hamburger = {
-  view: ({ attrs: { model } }) =>
-    m(
-      "button.hamburger.btn",
-      {
-        onclick: () => model.toggleNav(!model.toggleNav())
-      },
-      model.toggleNav() ? "X" : m.trust(`&#9776`)
-    )
-}
-
-const Nav = {
-  view: ({ attrs: { model } }) =>
-    m(".nav", {}, [
-      m(
-        "code.code",
-        "Proof of concept app for chat built in mithril and using pubnub"
-      ),
-      m(
-        "button.btn",
-        {
-          onclick: () => {
-            model.user.name("")
-            m.route.set("/login")
-          }
-        },
-        "logout"
-      )
-    ])
-}
-
-const Header = {
-  open: false,
-  view: ({ attrs: { model } }) => m(".header", {}, [m(Hamburger, { model })])
-}
-const Body = {
-  view: ({ attrs: { model } }) =>
-    m(
-      ".body",
-      model.msgs.map((msg, idx) => m(NewMsg, { key: idx, msg, model }))
-    )
-}
-const Footer = {
-  newMsg: Stream(""),
-  view: ({ state, attrs: { model } }) =>
-    m("form.footer", {}, [
-      m("textarea.input", {
-        onkeyup: (e) => state.newMsg(e.target.value),
-        value: state.newMsg(),
-        placeholder: "Add message here"
-      }),
-      m(
-        "button.btn",
-        {
-          onclick: (e) => {
-            let ctx = {
-              id: model.user.id(),
-              from: model.user.name(),
-              msg: state.newMsg(),
-              time: MT()
-            }
-            model.chat.publish({
-              channel: "mithril-chat",
-              message: JSON.stringify(ctx)
-            })
-            state.newMsg("")
-          },
-          disabled: state.newMsg().length < 2
-        },
-        "send"
-      )
-    ])
-}
-
-const Layout = {
-  view: ({ children, attrs: { model } }) => [
-    m(Header, { model }),
-    model.toggleNav() && m(Nav, { model }),
-    children
-  ]
-}
-
-const Chat = {
-  view: ({ attrs: { model } }) =>
-    m(".chat", m(Body, { model }), m(Footer, { model }))
-}
-
-const Login = {
-  view: ({ attrs: { model } }) =>
-    m(
-      "form.login",
-      {
-        onsubmit: (e) => {
-          e.preventDefault()
-        }
-      },
-      [
-        m("h1.h1", "Enter a username to start chatting"),
-        m("input.input", {
-          onkeyup: (e) => model.user.name(e.target.value),
-          placeholder: "minimum 2 letters"
-        }),
-        m(
-          "button.btn",
-          {
-            onclick: () => {
-              m.route.set("/chat")
-            },
-            disabled: model.user.name().length < 3
-          },
-          "login"
-        )
-      ]
-    )
-}
-
-export const routes = (model) => ({
-  "/login": {
-    render: () => {
-      return m(Login, { model })
-    }
-  },
-  "/chat": {
-    onmatch: () => {
-      return model.user.name()
-        ? m(Layout, { model }, m(Chat, { model }))
-        : m.route.set("/login")
+      render: () => m(Layout, { mdl }, m(Home, { mdl }))
     },
-    render: () => {
-      return m(Layout, { model }, m(Chat, { model }))
+    "/addcard": {
+      onmatch: () => {
+        mdl.page = "Add New Card"
+      },
+      render: () => m(Layout, { mdl }, m(AddCard, { mdl }))
+    },
+    "/picture": {
+      onmatch: ({ side }) => {
+        mdl.side = side
+        mdl.page = `${side} picture`
+      },
+      render: () => m(Layout, { mdl }, m(Picture, { mdl }))
+    },
+    "/:idcard": {
+      onmatch: ({ idcard }) => {
+        mdl.page = idcard
+      },
+      render: () => m(Layout, { mdl }, m(Card, { mdl }))
     }
   }
-})
+}
+
+export default routes
