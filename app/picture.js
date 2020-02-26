@@ -1,20 +1,26 @@
 const initCam = (video, mdl) => {
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
-      mdl.stream = stream
-      video.srcObject = stream
-      video.play()
-    })
+    navigator.mediaDevices
+      .getUserMedia({ video: { facingMode: { camera: "environment" } } })
+      .then(
+        (stream) => {
+          mdl.stream = stream
+          video.srcObject = stream
+          video.play()
+          mdl.video = video
+        },
+        (e) => console.log(e)
+      )
   }
 }
 
 const draw = (mdl) => {
-  let video = document.getElementById("video")
+  // let video = document.getElementById("video")
   let image = new Image()
   document
     .getElementById("canvas")
     .getContext("2d")
-    .drawImage(video, 0, 0, 640, 480)
+    .drawImage(mdl.video, 0, 0, 640, 480)
   image.src = document.getElementById("canvas").toDataURL("image/webp")
   mdl.card[mdl.side] = image
   m.route.set("/addcard")
