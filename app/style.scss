@@ -19,12 +19,20 @@ body {
   flex-flow: row;
   justify-content: space-between;
   align-content: center;
+  padding: 10px;
+}
+
+#idmaker {
+  display: flex;
+  padding: 10px;
+  justify-content: space-between;
+  align-content: center;
 }
 
 #picture-container {
   position: relative;
-  width: 100vw;
-  height: 100vh;
+  width: 670px;
+  height: 350px;
 
   #picture-overlay {
     z-index: 1000;

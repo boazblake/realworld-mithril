@@ -1,5 +1,6 @@
 const model = {
   state: {},
+  settings: {},
   page: "",
   idCards: [],
   stream: undefined,

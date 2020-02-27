@@ -71,17 +71,19 @@ const draw = (mdl) => {
 const Picture = () => {
   return {
     view: ({ attrs: { mdl } }) =>
-      m(".container", { id: "picture-container" }, [
-        m("video", {
-          id: "video",
-          oncreate: ({ dom }) => initCam(dom, mdl),
-          autoplay: true,
-          playsinline: true
-        }),
-        m(OverLay),
-        m("canvas", {
-          id: "canvas"
-        }),
+      m(".container", [
+        m("", { id: "picture-container" }, [
+          m("video", {
+            id: "video",
+            oncreate: ({ dom }) => initCam(dom, mdl),
+            autoplay: true,
+            playsinline: true
+          }),
+          m(OverLay),
+          m("canvas", {
+            id: "canvas"
+          })
+        ]),
         m("button", { onclick: () => draw(mdl) }, "Save")
       ]),
     onremove: ({ attrs: { mdl } }) =>

@@ -8,6 +8,7 @@ const Header = () => {
         m.route.get() !== "/home" &&
           m("button.btn", { onclick: () => m.route.set("/home") }, "HOME"),
         m.route.get() !== "/addcard" &&
+          m.route.get() !== "/home" &&
           m("button.btn", { onclick: (e) => goBack(mdl) }, "BACK"),
         mdl.page
       ])
