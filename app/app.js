@@ -1,35 +1,28 @@
 import Layout from "./layout.js"
-import Home from "./home.js"
-import Picture from "./picture.js"
-import IdMaker from "./idmaker.js"
+import Home from "./pages/home/index"
+import Article from "./pages/article/index"
+import Profile from "./pages/profile/index"
 
 const routes = (mdl) => {
   return {
     "/home": {
-      onmatch: () => {
-        mdl.page = "ID Cards"
-      },
-      render: () => m(Layout, { mdl }, m(Home, { mdl }))
+      onmatch: () => {},
+      render: () => m(Layout, { mdl }, m(Home, { mdl })),
     },
-    "/addcard": {
-      onmatch: () => {
-        mdl.page = "Add New Card"
+
+    "/article/:slug": {
+      onmatch: ({ slug }) => {
+        mdl.slug = slug
       },
-      render: () => m(Layout, { mdl }, m(IdMaker, { mdl }))
+      render: () => m(Layout, { mdl }, m(Article, { mdl })),
     },
-    "/picture": {
-      onmatch: () => {
-        mdl.page = `${mdl.side}picture`
+
+    "/profile/:slug": {
+      onmatch: ({ slug }) => {
+        mdl.slug = slug
       },
-      render: () => m(Layout, { mdl }, m(Picture, { mdl }))
+      render: () => m(Layout, { mdl }, m(Profile, { mdl })),
     },
-    "/:idcard": {
-      onmatch: () => {
-        !mdl.card.name && m.route.set("/home")
-        mdl.page = mdl.card.name
-      },
-      render: () => m(Layout, { mdl }, m(IdMaker, { mdl }))
-    }
   }
 }
 

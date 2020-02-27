@@ -1,10 +1,7 @@
 const model = {
-  state: {},
+  state: { isLoading: false, loadingProgress: { max: 0, value: 0 } },
   settings: {},
   page: "",
-  idCards: [],
-  stream: undefined,
-  card: { front: undefined, back: undefined, name: undefined }
 }
 
 export default model

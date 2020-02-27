@@ -3,17 +3,17 @@ exports.files = {
   javascripts: {
     joinTo: {
       "vendor.js": /^(?!app)/, // Files that are not in `app` dir.
-      "app.js": /^app/
-    }
+      "app.js": /^app/,
+    },
   },
   stylesheets: {
     joinTo: {
       "app.css": [
         (path) => path.includes(".scss"),
-        (path) => path.includes(".css")
-      ]
-    }
-  }
+        (path) => path.includes(".css"),
+      ],
+    },
+  },
 }
 
 exports.plugins = {
@@ -21,16 +21,16 @@ exports.plugins = {
     precision: 8,
     mode: "native",
     sourceMapEmbed: true,
-    includePaths: ["node_modules/spectre.css/src/**/*.scss"]
+    includePaths: ["node_modules/spectre.css/src/**/*.scss"],
   },
   imagemin: {
     plugins: {
       "imagemin-gifsicle": true,
       "imagemin-jpegtran": true,
       "imagemin-optipng": true,
-      "imagemin-svgo": true
+      "imagemin-svgo": true,
     },
-    pattern: /\.(gif|jpg|jpeg|jpe|jif|jfif|jfi|png|svg|svgz)$/
+    pattern: /\.(gif|jpg|jpeg|jpe|jif|jfif|jfi|png|svg|svgz)$/,
   },
   copycat: {
     // fonts: [
@@ -40,7 +40,7 @@ exports.plugins = {
     // ],
     images: ["app/assets/images"],
     verbose: true, //shows each file that is copied to the destination directory
-    onlyChanged: true //only copy a file if it's modified time has changed (only effective when using brunch watch)
+    onlyChanged: true, //only copy a file if it's modified time has changed (only effective when using brunch watch)
   },
   swPrecache: {
     swFileName: "service-worker.js",
@@ -50,26 +50,20 @@ exports.plugins = {
         "docs/app.css",
         "docs/app.js",
         "docs/vendor.js",
-        "docs/index.html"
+        "docs/index.html",
       ],
-      stripPrefix: "docs/"
-    }
+      stripPrefix: "docs/",
+    },
   },
-  "@babel": { presets: ["env"] }
+  "@babel": { presets: ["env"] },
 }
 
 exports.paths = {
-  public: "docs"
+  public: "docs",
+  watched: ["app", "app/components", "app/Http"],
 }
 
 exports.npm = {
   enabled: true,
-  globals: { m: "mithril", Stream: "mithril-stream" },
-  styles: {
-    "spectre.css": [
-      "dist/spectre.css",
-      "dist/spectre-exp.css",
-      "dist/spectre-icons.css"
-    ]
-  }
+  globals: { m: "mithril", Task: "data.task" },
 }
