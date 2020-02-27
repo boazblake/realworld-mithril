@@ -1,7 +1,13 @@
-const IdCards = () => {
+const IdCards = ({ attrs: { mdl } }) => {
+  const toEdit = (card) => {
+    mdl.card = card
+    console.log(mdl, card)
+    m.route.set(`/${card.name}`)
+  }
+
   return {
     view: ({ attrs: { card } }) => {
-      return m(".card", [
+      return m(".card", { onclick: () => toEdit(card) }, [
         m("label", card.name),
         m("img", { width: 100, src: card.front.src })
       ])

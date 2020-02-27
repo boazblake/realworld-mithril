@@ -1,7 +1,13 @@
 const initCam = (video, mdl) => {
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: { camera: "environment" } } })
+      .getUserMedia({
+        video: {
+          width: 426,
+          height: 202,
+          facingMode: { camera: "environment" }
+        }
+      })
       .then(
         (stream) => {
           mdl.stream = stream
@@ -15,12 +21,11 @@ const initCam = (video, mdl) => {
 }
 
 const draw = (mdl) => {
-  // let video = document.getElementById("video")
   let image = new Image()
   document
     .getElementById("canvas")
     .getContext("2d")
-    .drawImage(mdl.video, 0, 0, 640, 480)
+    .drawImage(mdl.video, 0, 0, 426, 202)
   image.src = document.getElementById("canvas").toDataURL("image/webp")
   mdl.card[mdl.side] = image
   m.route.set("/addcard")
@@ -33,16 +38,14 @@ const Picture = () => {
         m("video", {
           id: "video",
           oncreate: ({ dom }) => initCam(dom, mdl),
-          width: 640,
-          height: 480,
+          width: 426,
+          height: 202,
           autoplay: true,
           playsinline: true
         }),
         m("canvas", {
           style: { display: "none" },
-          id: "canvas",
-          width: 640,
-          height: 480
+          id: "canvas"
         }),
         m("button", { onclick: () => draw(mdl) }, "Save")
       ]),
