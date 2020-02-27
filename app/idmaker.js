@@ -16,6 +16,12 @@ const IdMaker = ({ attrs: { mdl } }) => {
     m.route.set("/home")
   }
 
+  const getImage = (canvas, mdl, side) => {
+    canvas.width = mdl.card[side].width
+    canvas.height = mdl.card[side].height
+    canvas.getContext("2d").drawImage(mdl.card[side], 0, 0)
+  }
+
   const retakeImage = (side, mdl) => {
     mdl.side = side
 
@@ -36,8 +42,8 @@ const IdMaker = ({ attrs: { mdl } }) => {
         m(
           ".column.col-12",
           mdl.state.front
-            ? m("img", {
-                src: mdl.state.front.src,
+            ? m("canvas.id-preview", {
+                oncreate: ({ dom }) => getImage(dom, mdl, "front"),
                 onclick: () => retakeImage("front", mdl)
               })
             : m(".card.empty", { onclick: (e) => takeImage("front", mdl) }, [
@@ -48,8 +54,8 @@ const IdMaker = ({ attrs: { mdl } }) => {
         m(
           ".column.col-12",
           mdl.state.back
-            ? m("img", {
-                src: mdl.state.back.src,
+            ? m("canvas.id-preview", {
+                oncreate: ({ dom }) => getImage(dom, mdl, "back"),
                 onclick: () => retakeImage("back", mdl)
               })
             : m(".card.empty", { onclick: () => takeImage("back", mdl) }, [
