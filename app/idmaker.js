@@ -1,4 +1,4 @@
-const Card = ({ attrs: { mdl } }) => {
+const IdMaker = ({ attrs: { mdl } }) => {
   const state = {
     name: mdl.card.name,
     back: mdl.card.back,
@@ -50,4 +50,4 @@ const Card = ({ attrs: { mdl } }) => {
   }
 }
 
-export default Card
+export default IdMaker

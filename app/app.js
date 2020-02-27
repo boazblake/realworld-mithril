@@ -1,7 +1,7 @@
 import Layout from "./layout.js"
 import Home from "./home.js"
-import Card from "./card.js"
 import Picture from "./picture.js"
+import IdMaker from "./idmaker.js"
 
 const routes = (mdl) => {
   return {
@@ -15,7 +15,7 @@ const routes = (mdl) => {
       onmatch: () => {
         mdl.page = "Add New Card"
       },
-      render: () => m(Layout, { mdl }, m(Card, { mdl }))
+      render: () => m(Layout, { mdl }, m(IdMaker, { mdl }))
     },
     "/picture": {
       onmatch: () => {
@@ -28,7 +28,7 @@ const routes = (mdl) => {
         !mdl.card.name && m.route.set("/home")
         mdl.page = mdl.card.name
       },
-      render: () => m(Layout, { mdl }, m(Card, { mdl }))
+      render: () => m(Layout, { mdl }, m(IdMaker, { mdl }))
     }
   }
 }

@@ -21,6 +21,41 @@ body {
   align-content: center;
 }
 
+#picture-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+
+  #picture-overlay {
+    z-index: 1000;
+    position: absolute;
+    top: 35px;
+    left: 35px;
+    width: 670px;
+    height: 300px;
+    translate: 200px 50px;
+  }
+
+  #video {
+    position: absolute;
+    top: 35px;
+    left: 35px;
+    width: 670px;
+    height: 300px;
+    z-index: 0;
+  }
+
+  #canvas {
+    position: absolute;
+    display: none;
+    top: 35px;
+    left: 35px;
+    width: 670px;
+    height: 300px;
+    z-index: 0;
+  }
+}
+
 @media screen and (min-width: 351px) {
   .footer {
     width: 80%;
