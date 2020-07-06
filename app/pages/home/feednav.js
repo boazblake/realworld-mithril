@@ -2,10 +2,26 @@ import { without } from "ramda"
 
 export const FeedNav = ({ attrs: { fetchData } }) => {
   return {
-    view: ({ attrs: { mdl, data } }) =>
-      m(
+    view: ({ attrs: { mdl, data } }) => {
+      console.log(mdl)
+      return m(
         ".feed-toggle",
         m("ul.nav nav-pills outline-active", [
+          mdl.user &&
+            m(
+              "li.nav-item",
+              m(
+                `.nav-link ${data.tags.current == "feed" && "active"}`,
+                {
+                  onclick: (e) => {
+                    data.tags.current = "feed"
+                    fetchData(mdl)
+                  },
+                },
+                "Your Feed"
+              )
+            ),
+
           m(
             "li.nav-item",
             m(
@@ -13,7 +29,7 @@ export const FeedNav = ({ attrs: { fetchData } }) => {
               {
                 onclick: (e) => {
                   data.tags.current = ""
-                  fetchData(mdl.mdl)
+                  fetchData(mdl)
                 },
               },
               "Global Feed"
@@ -29,7 +45,7 @@ export const FeedNav = ({ attrs: { fetchData } }) => {
                   {
                     onclick: (e) => {
                       data.tags.current = tag
-                      fetchData(mdl.mdl)
+                      fetchData(mdl)
                     },
                   },
                   tag
@@ -42,6 +58,7 @@ export const FeedNav = ({ attrs: { fetchData } }) => {
             )
           ),
         ])
-      ),
+      )
+    },
   }
 }

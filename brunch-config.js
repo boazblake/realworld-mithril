@@ -60,7 +60,13 @@ exports.plugins = {
 
 exports.paths = {
   public: "docs",
-  watched: ["app", "app/components", "app/Http"],
+  watched: [
+    "app",
+    "app/components",
+    "app/Http",
+    "app/Validations",
+    "app/Utils",
+  ],
 }
 
 exports.npm = {

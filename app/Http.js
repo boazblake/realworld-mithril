@@ -35,7 +35,7 @@ const xhrProgress = (mdl) => ({
 
 export const parseHttpError = (mdl) => (rej) => (e) => {
   mdl.state.isLoading = false
-  return rej(e.response)
+  return rej(e.response.errors)
 }
 
 export const parseHttpSuccess = (mdl) => (res) => (data) => {
@@ -44,8 +44,8 @@ export const parseHttpSuccess = (mdl) => (res) => (data) => {
 }
 
 const getUserToken = () =>
-  window.sessionStorage.getItem("user-token")
-    ? window.sessionStorage.getItem("user-token")
+  sessionStorage.getItem("token")
+    ? { authorization: sessionStorage.getItem("token") }
     : ""
 
 const call = (_headers) => (method) => (mdl) => (url) => (body) => {
@@ -68,7 +68,9 @@ const call = (_headers) => (method) => (mdl) => (url) => (body) => {
 }
 
 const Http = {
-  getTask: (mdl) => (url) => call({})("GET")(mdl)(url)(null),
+  getTask: (mdl) => (url) => call(getUserToken())("GET")(mdl)(url)(null),
+  postTask: (mdl) => (url) => (data) =>
+    call(getUserToken())("POST")(mdl)(url)(data),
 }
 
 export default Http

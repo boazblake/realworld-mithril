@@ -17,14 +17,18 @@ export const ArticlePreview = () => {
         m(".article-meta", [
           m(
             m.route.Link,
-            { href: `/profile/${username}` },
+            { href: `/profile/${username}`, options: { replace: true } },
             m("img", { src: image })
           ),
 
           m(".info", [
             m(
               m.route.Link,
-              { class: "author", href: `/profile/${username}` },
+              {
+                class: "author",
+                href: `/profile/${username}`,
+                options: { replace: true },
+              },
               username
             ),
             m("span.date", createdAt),
