@@ -1,22 +1,27 @@
 import Http from "Http"
 import { loadDataTask } from "./model"
 import { Banner } from "components"
+import snarkdown from "snarkdown"
 
 const FollowComponent = () => {
   return {
     view: ({
       attrs: {
         mdl,
-        data: { username, image, createdAt },
+        data: {
+          author: { username, image },
+          createdAt,
+          slug,
+        },
       },
     }) => {
-      return m("div.article-meta", [
+      return m(".article-meta", [
         m(
           m.route.Link,
           { href: `profile/${username}` },
           m("img", { src: image })
         ),
-        m("div.info", [
+        m(".info", [
           m(
             m.route.Link,
             { class: "author", href: `profile/${username}` },
@@ -24,13 +29,23 @@ const FollowComponent = () => {
           ),
           m("span.date", createdAt),
         ]),
-        m("button.btn.btn-sm.btn-outline-secondary", [
-          m("i.ion-plus-round"),
-          " ",
-          m.trust("&nbsp;"),
-          ` Follow ${username} `,
-          m("span.counter", "(10)"),
-        ]),
+        mdl.user.username == username
+          ? m(
+              m.route.Link,
+              {
+                class: "btn btn-sm btn-outline-secondary",
+                href: `/editor/${slug}`,
+                selector: "button",
+              },
+              [m("i.ion-edit"), "Edit Article"]
+            )
+          : m("button.btn.btn-sm.btn-outline-secondary", [
+              m("i.ion-plus-round"),
+              " ",
+              m.trust("&nbsp;"),
+              ` Follow ${username} `,
+              m("span.counter", "(10)"),
+            ]),
         " ",
         m.trust("&nbsp;"),
         m.trust("&nbsp;"),
@@ -52,10 +67,10 @@ const CommentForm = () => {
     view: ({ attrs: { mdl } }) =>
       m("form.card.comment-form", [
         m(
-          "div.card-block",
+          ".card-block",
           m("textarea.form-control[placeholder='Write a comment...'][rows='3']")
         ),
-        m("div.card-footer", [
+        m(".card-footer", [
           m("img.comment-author-img[src='http://i.imgur.com/Qr71crq.jpg']"),
           m("button.btn.btn-sm.btn-primary", " Post Comment "),
         ]),
@@ -76,9 +91,9 @@ const Comment = () => {
         },
       },
     }) =>
-      m("div.card", [
-        m("div.card-block", m("p.card-text", body)),
-        m("div.card-footer", [
+      m(".card", [
+        m(".card-block", m("p.card-text", body)),
+        m(".card-footer", [
           m(
             m.route.Link,
             { class: "comment-author" },
@@ -133,30 +148,42 @@ const Article = () => {
   return {
     oninit: ({ attrs: { mdl } }) => loadData(mdl),
     view: ({ attrs: { mdl } }) =>
-      m("div.article-page", [
+      m(".article-page", [
         state.status == "loading" &&
           m(Banner, [m("h1.logo-font", "Loading ...")]),
         state.status == "error" &&
           m(Banner, [m("h1.logo-font", `Error Loading Data: ${state.error}`)]),
         state.status == "success" && [
           m(
-            "div.banner",
-            m("div.container", [
+            ".banner",
+            m(".container", [
               m("h1", data.article.title),
-              m(FollowComponent, { mdl, data: data.article.author }),
+              m(FollowComponent, {
+                mdl,
+                data: data.article,
+              }),
             ])
           ),
-          m("div.container.page", [
-            m("div.row.article-content", m("div.col-md-12", data.article.body)),
+          m(".container.page", [
+            m(
+              ".row.article-content",
+              m(
+                ".col-md-12.text-justify",
+                m.trust(snarkdown(data.article.body))
+              )
+            ),
             m("hr"),
             m(
-              "div.article-actions",
-              m(FollowComponent, { mdl, data: data.article.author })
+              ".article-actions",
+              m(FollowComponent, {
+                mdl,
+                data: data.article,
+              })
             ),
             m(
-              "div.row",
+              ".row",
               m(
-                "div.col-xs-12.col-md-8.offset-md-2",
+                ".col-xs-12.col-md-8.offset-md-2",
                 m(ArticleComments, { mdl, comments: data.comments })
               )
             ),

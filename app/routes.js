@@ -5,6 +5,7 @@ import Profile from "./pages/profile/index"
 import Register from "./pages/auth/register"
 import Login from "./pages/auth/login"
 import Settings from "./pages/settings/index"
+import Editor from "./pages/editor/index"
 
 const routes = (mdl) => {
   return {
@@ -13,6 +14,20 @@ const routes = (mdl) => {
         mdl.slug = slug
       },
       render: () => m(Layout, { mdl }, m(Home, { mdl })),
+    },
+
+    "/editor": {
+      onmatch: ({ slug }) => {
+        mdl.slug = slug
+      },
+      render: () => m(Layout, { mdl }, m(Editor, { mdl })),
+    },
+
+    "/editor/:slug": {
+      onmatch: ({ slug }) => {
+        mdl.slug = slug
+      },
+      render: () => m(Layout, { mdl }, m(Editor, { mdl })),
     },
 
     "/article/:slug": {

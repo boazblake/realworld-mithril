@@ -285,7 +285,8 @@ exports.log = void 0;
 
 var log = function log(m) {
   return function (v) {
-    console.log(m, v), v;
+    console.log(m, v);
+    return v;
   };
 };
 
@@ -746,7 +747,7 @@ var Header = function Header() {
         href: "#"
       }, "conduit"), m("ul.nav navbar-nav pull-xs-right", mdl.user ? [m("li.nav-item", m(m.route.Link, {
         "class": "nav-link",
-        href: "/register"
+        href: "/editor"
       }, "New Article")), m("li.nav-item", m(m.route.Link, {
         "class": "nav-link",
         href: "/settings/".concat(mdl.user.username)
@@ -836,6 +837,8 @@ var _model = require("./model");
 
 var _components = require("components");
 
+var _snarkdown = _interopRequireDefault(require("snarkdown"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 var FollowComponent = function FollowComponent() {
@@ -844,17 +847,23 @@ var FollowComponent = function FollowComponent() {
       var _ref$attrs = _ref.attrs,
           mdl = _ref$attrs.mdl,
           _ref$attrs$data = _ref$attrs.data,
-          username = _ref$attrs$data.username,
-          image = _ref$attrs$data.image,
-          createdAt = _ref$attrs$data.createdAt;
-      return m("div.article-meta", [m(m.route.Link, {
+          _ref$attrs$data$autho = _ref$attrs$data.author,
+          username = _ref$attrs$data$autho.username,
+          image = _ref$attrs$data$autho.image,
+          createdAt = _ref$attrs$data.createdAt,
+          slug = _ref$attrs$data.slug;
+      return m(".article-meta", [m(m.route.Link, {
         href: "profile/".concat(username)
       }, m("img", {
         src: image
-      })), m("div.info", [m(m.route.Link, {
+      })), m(".info", [m(m.route.Link, {
         "class": "author",
         href: "profile/".concat(username)
-      }, username), m("span.date", createdAt)]), m("button.btn.btn-sm.btn-outline-secondary", [m("i.ion-plus-round"), " ", m.trust("&nbsp;"), " Follow ".concat(username, " "), m("span.counter", "(10)")]), " ", m.trust("&nbsp;"), m.trust("&nbsp;"), " ", m("button.btn.btn-sm.btn-outline-primary", [m("i.ion-heart"), " ", m.trust("&nbsp;"), " Favorite Post ", m("span.counter", "(29)")])]);
+      }, username), m("span.date", createdAt)]), mdl.user.username == username ? m(m.route.Link, {
+        "class": "btn btn-sm btn-outline-secondary",
+        href: "/editor/".concat(slug),
+        selector: "button"
+      }, [m("i.ion-edit"), "Edit Article"]) : m("button.btn.btn-sm.btn-outline-secondary", [m("i.ion-plus-round"), " ", m.trust("&nbsp;"), " Follow ".concat(username, " "), m("span.counter", "(10)")]), " ", m.trust("&nbsp;"), m.trust("&nbsp;"), " ", m("button.btn.btn-sm.btn-outline-primary", [m("i.ion-heart"), " ", m.trust("&nbsp;"), " Favorite Post ", m("span.counter", "(29)")])]);
     }
   };
 };
@@ -863,7 +872,7 @@ var CommentForm = function CommentForm() {
   return {
     view: function view(_ref2) {
       var mdl = _ref2.attrs.mdl;
-      return m("form.card.comment-form", [m("div.card-block", m("textarea.form-control[placeholder='Write a comment...'][rows='3']")), m("div.card-footer", [m("img.comment-author-img[src='http://i.imgur.com/Qr71crq.jpg']"), m("button.btn.btn-sm.btn-primary", " Post Comment ")])]);
+      return m("form.card.comment-form", [m(".card-block", m("textarea.form-control[placeholder='Write a comment...'][rows='3']")), m(".card-footer", [m("img.comment-author-img[src='http://i.imgur.com/Qr71crq.jpg']"), m("button.btn.btn-sm.btn-primary", " Post Comment ")])]);
     }
   };
 };
@@ -880,7 +889,7 @@ var Comment = function Comment() {
           body = _ref3$attrs$comment.body,
           createdAt = _ref3$attrs$comment.createdAt,
           id = _ref3$attrs$comment.id;
-      return m("div.card", [m("div.card-block", m("p.card-text", body)), m("div.card-footer", [m(m.route.Link, {
+      return m(".card", [m(".card-block", m("p.card-text", body)), m(".card-footer", [m(m.route.Link, {
         "class": "comment-author"
       }, m("img.comment-author-img", {
         src: image
@@ -943,13 +952,13 @@ var Article = function Article() {
     },
     view: function view(_ref7) {
       var mdl = _ref7.attrs.mdl;
-      return m("div.article-page", [state.status == "loading" && m(_components.Banner, [m("h1.logo-font", "Loading ...")]), state.status == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.status == "success" && [m("div.banner", m("div.container", [m("h1", data.article.title), m(FollowComponent, {
+      return m(".article-page", [state.status == "loading" && m(_components.Banner, [m("h1.logo-font", "Loading ...")]), state.status == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.status == "success" && [m(".banner", m(".container", [m("h1", data.article.title), m(FollowComponent, {
         mdl: mdl,
-        data: data.article.author
-      })])), m("div.container.page", [m("div.row.article-content", m("div.col-md-12", data.article.body)), m("hr"), m("div.article-actions", m(FollowComponent, {
+        data: data.article
+      })])), m(".container.page", [m(".row.article-content", m(".col-md-12.text-justify", m.trust((0, _snarkdown["default"])(data.article.body)))), m("hr"), m(".article-actions", m(FollowComponent, {
         mdl: mdl,
-        data: data.article.author
-      })), m("div.row", m("div.col-xs-12.col-md-8.offset-md-2", m(ArticleComments, {
+        data: data.article
+      })), m(".row", m(".col-xs-12.col-md-8.offset-md-2", m(ArticleComments, {
         mdl: mdl,
         comments: data.comments
       })))])]]);
@@ -1310,6 +1319,134 @@ var Register = function Register() {
 
 var _default = Register;
 exports["default"] = _default;
+});
+
+;require.register("pages/editor/index.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _Http = _interopRequireDefault(require("Http"));
+
+var _model = require("./model");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var Editor = function Editor(_ref) {
+  var mdl = _ref.attrs.mdl;
+  var data = {};
+  var state = {};
+
+  var initEditor = function initEditor(mdl) {
+    var onSuccess = function onSuccess(_ref2) {
+      var article = _ref2.article;
+      data = article;
+      console.log(data);
+    };
+
+    var onError = function onError(errors) {
+      state.errors = errors;
+    };
+
+    if (mdl.slug) {
+      console.log(mdl);
+      (0, _model.loadArticleTask)(_Http["default"])(mdl)(mdl.slug).fork(onError, onSuccess);
+    }
+  };
+
+  var submitData = function submitData(data) {
+    var onSuccess = function onSuccess(_ref3) {
+      var slug = _ref3.article.slug;
+      console.log(slug);
+      m.route.set("/article/".concat(slug));
+    };
+
+    var onError = function onError(errors) {
+      state.errors = errors;
+    };
+
+    (0, _model.submitArticleTask)(_Http["default"])(mdl)(data).fork(onError, onSuccess);
+  };
+
+  return {
+    oninit: function oninit(_ref4) {
+      var mdl = _ref4.attrs.mdl;
+      return initEditor(mdl);
+    },
+    view: function view() {
+      return m(".editor-page", m(".container.page", m(".row", m(".col-md-10.offset-md-1.col-xs-12", m("form", [m("fieldset.form-group", m("input.form-control.form-control-lg", {
+        type: "text",
+        placeholder: "Article Title",
+        onchange: function onchange(e) {
+          return data.title = e.target.value;
+        },
+        value: data.title
+      })), m("fieldset.form-group", m("input.form-control.form-control-lg", {
+        type: "text",
+        placeholder: "What's this article about?",
+        onchange: function onchange(e) {
+          return data.description = e.target.value;
+        },
+        value: data.description
+      })), m("fieldset.form-group", m("textarea.form-control.form-control-lg", {
+        rows: 8,
+        placeholder: "Write your article (in markdown)",
+        onchange: function onchange(e) {
+          return data.body = e.target.value;
+        },
+        value: data.body
+      })), m("fieldset.form-group", m("input.form-control.form-control-lg", {
+        type: "text",
+        placeholder: "Enter tags",
+        onchange: function onchange(e) {
+          return data.tags = e.target.value;
+        },
+        value: data.tags
+      })), m("button.btn-lg.pull-xs-right.btn-primary", {
+        onclick: function onclick(e) {
+          return submitData(data);
+        }
+      }, " Publish Article ")])))));
+    }
+  };
+};
+
+var _default = Editor;
+exports["default"] = _default;
+});
+
+;require.register("pages/editor/model.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.submitArticleTask = exports.loadArticleTask = void 0;
+
+var loadArticleTask = function loadArticleTask(http) {
+  return function (mdl) {
+    return function (slug) {
+      return http.getTask(mdl)("articles/".concat(slug));
+    };
+  };
+};
+
+exports.loadArticleTask = loadArticleTask;
+
+var submitArticleTask = function submitArticleTask(http) {
+  return function (mdl) {
+    return function (article) {
+      return http.postTask(mdl)("articles")({
+        article: article
+      });
+    };
+  };
+};
+
+exports.submitArticleTask = submitArticleTask;
 });
 
 ;require.register("pages/home/feednav.js", function(exports, require, module) {
@@ -1795,6 +1932,8 @@ var _login = _interopRequireDefault(require("./pages/auth/login"));
 
 var _index5 = _interopRequireDefault(require("./pages/settings/index"));
 
+var _index6 = _interopRequireDefault(require("./pages/editor/index"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 var routes = function routes(mdl) {
@@ -1812,9 +1951,35 @@ var routes = function routes(mdl) {
         }));
       }
     },
-    "/article/:slug": {
+    "/editor": {
       onmatch: function onmatch(_ref2) {
         var slug = _ref2.slug;
+        mdl.slug = slug;
+      },
+      render: function render() {
+        return m(_index["default"], {
+          mdl: mdl
+        }, m(_index6["default"], {
+          mdl: mdl
+        }));
+      }
+    },
+    "/editor/:slug": {
+      onmatch: function onmatch(_ref3) {
+        var slug = _ref3.slug;
+        mdl.slug = slug;
+      },
+      render: function render() {
+        return m(_index["default"], {
+          mdl: mdl
+        }, m(_index6["default"], {
+          mdl: mdl
+        }));
+      }
+    },
+    "/article/:slug": {
+      onmatch: function onmatch(_ref4) {
+        var slug = _ref4.slug;
         mdl.slug = slug;
       },
       render: function render() {
@@ -1826,8 +1991,8 @@ var routes = function routes(mdl) {
       }
     },
     "/profile/:slug": {
-      onmatch: function onmatch(_ref3) {
-        var slug = _ref3.slug;
+      onmatch: function onmatch(_ref5) {
+        var slug = _ref5.slug;
         mdl.slug = slug;
       },
       render: function render() {
@@ -1840,8 +2005,8 @@ var routes = function routes(mdl) {
       }
     },
     "/settings/:slug": {
-      onmatch: function onmatch(_ref4) {
-        var slug = _ref4.slug;
+      onmatch: function onmatch(_ref6) {
+        var slug = _ref6.slug;
         mdl.slug = slug;
       },
       render: function render() {
@@ -1854,8 +2019,8 @@ var routes = function routes(mdl) {
       }
     },
     "/login": {
-      onmatch: function onmatch(_ref5) {
-        var slug = _ref5.slug;
+      onmatch: function onmatch(_ref7) {
+        var slug = _ref7.slug;
         mdl.slug = slug;
       },
       render: function render() {
@@ -1867,8 +2032,8 @@ var routes = function routes(mdl) {
       }
     },
     "/register": {
-      onmatch: function onmatch(_ref6) {
-        var slug = _ref6.slug;
+      onmatch: function onmatch(_ref8) {
+        var slug = _ref8.slug;
         mdl.slug = slug;
       },
       render: function render() {

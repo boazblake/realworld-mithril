@@ -1,3 +1,4 @@
 export const log = (m) => (v) => {
-  console.log(m, v), v
+  console.log(m, v)
+  return v
 }

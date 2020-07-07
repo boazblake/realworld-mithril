@@ -14,7 +14,7 @@ const Header = () => {
                     "li.nav-item",
                     m(
                       m.route.Link,
-                      { class: "nav-link", href: "/register" },
+                      { class: "nav-link", href: "/editor" },
                       "New Article"
                     )
                   ),
