@@ -1,6 +1,6 @@
 import Http from "Http"
 import { loadDataTask } from "./model"
-import { Banner, Loader, ArticlePreview } from "components"
+import { Banner, Loader, Articles } from "components"
 
 const Profile = () => {
   const data = {}
@@ -17,7 +17,6 @@ const Profile = () => {
     data.authorArticles = authorArticles
     data.authorFavoriteArticles = authorFavoriteArticles
     data.profile = profile
-    console.log("data", data)
     state.status = "success"
   }
 
@@ -29,11 +28,11 @@ const Profile = () => {
 
   const loadData = (mdl) => {
     state.status = "loading"
-    loadDataTask(Http)(mdl)(state)(data).fork(onError, onSuccess)
+    loadDataTask(Http)(mdl)(state).fork(onError, onSuccess)
   }
   return {
     oninit: ({ attrs: { mdl } }) => loadData(mdl),
-    view: () =>
+    view: ({ attrs: { mdl } }) =>
       m(
         ".profile-page",
 
@@ -52,12 +51,26 @@ const Profile = () => {
                   m("img.user-img", { src: data.profile.image }),
                   m("h4", data.profile.username),
                   m("p", data.profile.bio),
-                  m("button.btn.btn-sm.btn-outline-secondary.action-btn", [
-                    m("i.ion-plus-round"),
-                    " ",
-                    m.trust("&nbsp;"),
-                    `Follow ${data.profile.username}`,
-                  ]),
+                  data.profile.username !== mdl.user.username
+                    ? m("button.btn.btn-sm.btn-outline-secondary.action-btn", [
+                        m("i.ion-plus-round"),
+                        " ",
+                        m.trust("&nbsp;"),
+                        `Follow ${data.profile.username}`,
+                      ])
+                    : m(
+                        "button.btn.btn-sm.btn-outline-secondary.action-btn",
+                        {
+                          onclick: (e) =>
+                            m.route.set(`/settings/${data.profile.username}`),
+                        },
+                        [
+                          m("i.ion-gear-a"),
+                          " ",
+                          m.trust("&nbsp;"),
+                          `Edit Profile Settings`,
+                        ]
+                      ),
                 ])
               )
             )
@@ -93,12 +106,8 @@ const Profile = () => {
                   ])
                 ),
                 state.showFaveArticles
-                  ? data.authorFavoriteArticles.articles.map((article) =>
-                      m(ArticlePreview, { article })
-                    )
-                  : data.authorArticles.articles.map((article) =>
-                      m(ArticlePreview, { article })
-                    ),
+                  ? m(Articles, { mdl, data: data.authorFavoriteArticles })
+                  : m(Articles, { mdl, data: data.authorArticles }),
               ])
             )
           ),

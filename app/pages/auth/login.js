@@ -25,6 +25,7 @@ const Login = () => {
     const onSuccess = ({ user }) => {
       state.isValid = true
       sessionStorage.setItem("token", `Token ${user.token}`)
+      sessionStorage.setItem("user", JSON.stringify(user))
       mdl.user = user
       m.route.set("/home")
     }

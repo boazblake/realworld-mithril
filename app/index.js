@@ -50,4 +50,8 @@ model.settings.profile = getProfile(winW)
 
 checkWidth(winW)
 
+if (sessionStorage.getItem("user")) {
+  model.user = JSON.parse(sessionStorage.getItem("user"))
+}
+
 m.route(root, "/home", routes(model))

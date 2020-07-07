@@ -1,4 +1,5 @@
 export * from "./banner"
 export * from "./loader"
 export * from "./paginator"
+export * from "./articles"
 export * from "./article-preview"

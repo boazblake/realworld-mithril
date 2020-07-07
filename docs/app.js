@@ -275,6 +275,23 @@ var _default = Http;
 exports["default"] = _default;
 });
 
+;require.register("Utils.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.log = void 0;
+
+var log = function log(m) {
+  return function (v) {
+    console.log(m, v), v;
+  };
+};
+
+exports.log = log;
+});
+
 ;require.register("Validations.js", function(exports, require, module) {
 "use strict";
 
@@ -431,6 +448,36 @@ var ArticlePreview = function ArticlePreview() {
 exports.ArticlePreview = ArticlePreview;
 });
 
+;require.register("components/articles.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Articles = void 0;
+
+var _components = require("components");
+
+var Articles = function Articles() {
+  return {
+    view: function view(_ref) {
+      var _ref$attrs = _ref.attrs,
+          mdl = _ref$attrs.mdl,
+          data = _ref$attrs.data;
+      return data.articles.any() ? data.articles.map(function (article) {
+        return m(_components.ArticlePreview, {
+          mdl: mdl,
+          data: data,
+          article: article
+        });
+      }) : m("p", "No articles are here... yet.");
+    }
+  };
+};
+
+exports.Articles = Articles;
+});
+
 ;require.register("components/banner.js", function(exports, require, module) {
 "use strict";
 
@@ -490,6 +537,18 @@ Object.keys(_paginator).forEach(function (key) {
     enumerable: true,
     get: function get() {
       return _paginator[key];
+    }
+  });
+});
+
+var _articles = require("./articles");
+
+Object.keys(_articles).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _articles[key];
     }
   });
 });
@@ -555,6 +614,7 @@ var Paginator = function Paginator() {
 
       var range = _toConsumableArray(Array(total).keys()).slice(1);
 
+      console.log(state);
       return m("ul.pagination", range.map(function (page) {
         return m("li.page-item ".concat(page == current && "active"), m(".page-link active", {
           onclick: function onclick(e) {
@@ -625,6 +685,11 @@ var checkWidth = function checkWidth(winW) {
 
 _model["default"].settings.profile = getProfile(winW);
 checkWidth(winW);
+
+if (sessionStorage.getItem("user")) {
+  _model["default"].user = JSON.parse(sessionStorage.getItem("user"));
+}
+
 m.route(root, "/home", (0, _routes["default"])(_model["default"]));
 });
 
@@ -679,9 +744,16 @@ var Header = function Header() {
       var mdl = _ref.attrs.mdl;
       return m("nav.navbar navbar-light", m(".container", m("a.navbar-brand", {
         href: "#"
-      }, "conduit"), m("ul.nav navbar-nav pull-xs-right", [// m("li.nav-item", m("a.nav-link", "New Post ")),
-      // m("li.nav-item", m("a.nav-link", "Settings ")),
-      m("li.nav-item", m(m.route.Link, {
+      }, "conduit"), m("ul.nav navbar-nav pull-xs-right", mdl.user ? [m("li.nav-item", m(m.route.Link, {
+        "class": "nav-link",
+        href: "/register"
+      }, "New Article")), m("li.nav-item", m(m.route.Link, {
+        "class": "nav-link",
+        href: "/settings/".concat(mdl.user.username)
+      }, "Settings")), m("li.nav-item", m(m.route.Link, {
+        "class": "nav-link",
+        href: "/profile/".concat(mdl.user.username)
+      }, mdl.user.username))] : [m("li.nav-item", m(m.route.Link, {
         "class": "nav-link",
         href: "/register"
       }, "Sign up")), m("li.nav-item", m(m.route.Link, {
@@ -977,6 +1049,7 @@ var Login = function Login() {
       var user = _ref.user;
       state.isValid = true;
       sessionStorage.setItem("token", "Token ".concat(user.token));
+      sessionStorage.setItem("user", JSON.stringify(user));
       mdl.user = user;
       m.route.set("/home");
     };
@@ -1245,7 +1318,7 @@ exports["default"] = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.FeedNav = void 0;
+exports["default"] = void 0;
 
 var _ramda = require("ramda");
 
@@ -1283,7 +1356,8 @@ var FeedNav = function FeedNav(_ref) {
   };
 };
 
-exports.FeedNav = FeedNav;
+var _default = FeedNav;
+exports["default"] = _default;
 });
 
 ;require.register("pages/home/index.js", function(exports, require, module) {
@@ -1300,9 +1374,9 @@ var _model = require("./model");
 
 var _components = require("components");
 
-var _sidebar = require("./sidebar");
+var _sidebar = _interopRequireDefault(require("./sidebar"));
 
-var _feednav = require("./feednav.js");
+var _feednav = _interopRequireDefault(require("./feednav.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -1316,7 +1390,8 @@ var Home = function Home() {
     articles: {}
   };
   var state = {
-    status: "loading",
+    feedStatus: "loading",
+    pageStatus: "loading",
     limit: 20,
     offset: 0,
     total: 0,
@@ -1331,16 +1406,17 @@ var Home = function Home() {
       data.articles = articles;
       state.total = articlesCount;
       data.tags.tagList = tags;
-      state.status = "success";
+      state.pageStatus = "success";
+      state.feedStatus = "success";
     };
 
     var onError = function onError(error) {
       console.log("error", error);
       state.error = error;
-      state.status = "error";
+      state.pageStatus = "error";
     };
 
-    state.status = "loading";
+    state.pageStatus = "loading";
     (0, _model.loadDataTask)(_Http["default"])(mdl)(state)(data).fork(onError, onSuccess);
   };
 
@@ -1350,16 +1426,16 @@ var Home = function Home() {
           articlesCount = _ref2.articlesCount;
       data.articles = articles;
       state.total = articlesCount;
-      state.status = "success";
+      state.feedStatus = "success";
     };
 
     var onError = function onError(error) {
       console.log("error", error);
       state.error = error;
-      state.status = "error";
+      state.feedStatus = "error";
     };
 
-    state.status = "loading";
+    state.feedStatus = "loading";
     (0, _model.getArticlesTask)(_Http["default"])(mdl)(state)(data).fork(onError, onSuccess);
   };
 
@@ -1370,24 +1446,21 @@ var Home = function Home() {
     },
     view: function view(_ref4) {
       var mdl = _ref4.attrs.mdl;
-      return m(".home", [!mdl.user && m(_components.Banner, [m("h1.logo-font", "conduit"), m("p", "A place to share your knowledge.")]), state.status == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.status == "success" && m(".container page", m(".row", [m(".col-md-9", [m(_feednav.FeedNav, {
+      return m(".home", [!mdl.user && m(_components.Banner, [m("h1.logo-font", "conduit"), m("p", "A place to share your knowledge.")]), state.pageStatus == "loading" && m(_components.Loader, [m("h1.logo-font", "Loading Data")]), state.pageStatus == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.pageStatus == "success" && m(".container page", m(".row", [m(".col-md-9", [m(_feednav["default"], {
         fetchData: loadArticles,
         mdl: mdl,
         data: data
-      }), data.articles.map(function (article) {
-        return m(_components.ArticlePreview, {
-          mdl: mdl,
-          data: data,
-          article: article
-        });
-      }), state.status == "loading" && m(_components.Loader, [m("h1.logo-font", "Loading ...")]), m(_components.Paginator, {
+      }), state.feedStatus == "loading" && m("p", "Loading Articles ..."), state.feedStatus == "success" && m(_components.Articles, {
+        mdl: mdl,
+        data: data
+      }), m(_components.Paginator, {
         mdl: mdl,
         state: state,
         fetchDataFor: function fetchDataFor(offset) {
           state.offset = offset * state.limit;
           loadArticles(mdl);
         }
-      })]), m(".col-md-3", m(_sidebar.SideBar, {
+      })]), m(".col-md-3", m(_sidebar["default"], {
         mdl: mdl,
         data: data
       }))]))]);
@@ -1454,7 +1527,7 @@ exports.loadDataTask = loadDataTask;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.SideBar = void 0;
+exports["default"] = void 0;
 
 var SideBar = function SideBar() {
   var selectTag = function selectTag(data, tag) {
@@ -1477,7 +1550,8 @@ var SideBar = function SideBar() {
   };
 };
 
-exports.SideBar = SideBar;
+var _default = SideBar;
+exports["default"] = _default;
 });
 
 ;require.register("pages/profile/index.js", function(exports, require, module) {
@@ -1514,7 +1588,6 @@ var Profile = function Profile() {
     data.authorArticles = authorArticles;
     data.authorFavoriteArticles = authorFavoriteArticles;
     data.profile = profile;
-    console.log("data", data);
     state.status = "success";
   };
 
@@ -1526,7 +1599,7 @@ var Profile = function Profile() {
 
   var loadData = function loadData(mdl) {
     state.status = "loading";
-    (0, _model.loadDataTask)(_Http["default"])(mdl)(state)(data).fork(onError, onSuccess);
+    (0, _model.loadDataTask)(_Http["default"])(mdl)(state).fork(onError, onSuccess);
   };
 
   return {
@@ -1534,10 +1607,15 @@ var Profile = function Profile() {
       var mdl = _ref2.attrs.mdl;
       return loadData(mdl);
     },
-    view: function view() {
+    view: function view(_ref3) {
+      var mdl = _ref3.attrs.mdl;
       return m(".profile-page", state.status == "loading" && m(_components.Loader, [m("h1.logo-font", "Loading ...")]), state.status == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.status == "success" && [m(".user-info", m(".container", m(".row", m(".col-xs-12.col-md-10.offset-md-1", [m("img.user-img", {
         src: data.profile.image
-      }), m("h4", data.profile.username), m("p", data.profile.bio), m("button.btn.btn-sm.btn-outline-secondary.action-btn", [m("i.ion-plus-round"), " ", m.trust("&nbsp;"), "Follow ".concat(data.profile.username)])])))), m(".container", m(".row", m(".col-xs-12.col-md-10.offset-md-1", [m(".articles-toggle", m("ul.nav.nav-pills.outline-active", [m("li.nav-item", m(".nav-link ".concat(!state.showFaveArticles && "active"), {
+      }), m("h4", data.profile.username), m("p", data.profile.bio), data.profile.username !== mdl.user.username ? m("button.btn.btn-sm.btn-outline-secondary.action-btn", [m("i.ion-plus-round"), " ", m.trust("&nbsp;"), "Follow ".concat(data.profile.username)]) : m("button.btn.btn-sm.btn-outline-secondary.action-btn", {
+        onclick: function onclick(e) {
+          return m.route.set("/settings/".concat(data.profile.username));
+        }
+      }, [m("i.ion-gear-a"), " ", m.trust("&nbsp;"), "Edit Profile Settings"])])))), m(".container", m(".row", m(".col-xs-12.col-md-10.offset-md-1", [m(".articles-toggle", m("ul.nav.nav-pills.outline-active", [m("li.nav-item", m(".nav-link ".concat(!state.showFaveArticles && "active"), {
         onclick: function onclick(e) {
           return state.showFaveArticles = false;
         }
@@ -1545,14 +1623,12 @@ var Profile = function Profile() {
         onclick: function onclick(e) {
           return state.showFaveArticles = true;
         }
-      }, "Favorited Articles"))])), state.showFaveArticles ? data.authorFavoriteArticles.articles.map(function (article) {
-        return m(_components.ArticlePreview, {
-          article: article
-        });
-      }) : data.authorArticles.articles.map(function (article) {
-        return m(_components.ArticlePreview, {
-          article: article
-        });
+      }, "Favorited Articles"))])), state.showFaveArticles ? m(_components.Articles, {
+        mdl: mdl,
+        data: data.authorFavoriteArticles
+      }) : m(_components.Articles, {
+        mdl: mdl,
+        data: data.authorArticles
       })])))]);
     }
   };
@@ -1576,12 +1652,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var log = function log(m) {
-  return function (v) {
-    console.log(m, v), v;
-  };
-};
-
 var getProfileTask = function getProfileTask(http) {
   return function (mdl) {
     return function (username) {
@@ -1604,7 +1674,7 @@ var getAuthorFavoriteArticlesTask = function getAuthorFavoriteArticlesTask(http)
   return function (mdl) {
     return function (state) {
       return function (username) {
-        return http.getTask(mdl)("articles?limit=20&offset=".concat(state.offset, "&favorite=").concat(username));
+        return http.getTask(mdl)("articles?limit=20&offset=".concat(state.offset, "&favorited=").concat(username));
       };
     };
   };
@@ -1613,23 +1683,94 @@ var getAuthorFavoriteArticlesTask = function getAuthorFavoriteArticlesTask(http)
 var loadDataTask = function loadDataTask(http) {
   return function (mdl) {
     return function (state) {
-      return function (data) {
-        return Task.of(function (profile) {
-          return function (authorArticles) {
-            return function (authorFavoriteArticles) {
-              return _objectSpread({}, profile, {
-                authorArticles: authorArticles,
-                authorFavoriteArticles: authorFavoriteArticles
-              });
-            };
+      return Task.of(function (profile) {
+        return function (authorArticles) {
+          return function (authorFavoriteArticles) {
+            return _objectSpread({}, profile, {
+              authorArticles: authorArticles,
+              authorFavoriteArticles: authorFavoriteArticles
+            });
           };
-        }).ap(getProfileTask(http)(mdl)(mdl.slug)).ap(getAuthorArticlesTask(http)(mdl)(state)(mdl.slug)).ap(getAuthorFavoriteArticlesTask(http)(mdl)(state)(mdl.slug));
-      };
+        };
+      }).ap(getProfileTask(http)(mdl)(mdl.slug)).ap(getAuthorArticlesTask(http)(mdl)(state)(mdl.slug)).ap(getAuthorFavoriteArticlesTask(http)(mdl)(state)(mdl.slug));
     };
   };
 };
 
 exports.loadDataTask = loadDataTask;
+});
+
+;require.register("pages/settings/index.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _model = require("./model");
+
+var Settings = function Settings(_ref) {
+  var mdl = _ref.attrs.mdl;
+  var data = JSON.parse(JSON.stringify(mdl.user));
+  return {
+    view: function view(_ref2) {
+      var mdl = _ref2.attrs.mdl;
+      return m(".settings-page", m(".container.page", m(".row", m(".col-md-6.offset-md-3.col-xs-12", [m("h1.text-xs-center", "Your Settings"), m("form", m("fieldset", [m("fieldset.form-group", m("input.form-control.form-control-lg", {
+        type: "text",
+        placeholder: "URL of profile picture",
+        onchange: function onchange(e) {
+          return data.image = e.target.value;
+        },
+        value: data.image
+      })), m("fieldset.form-group", m("input.form-control.form-control-lg", {
+        type: "text",
+        placeholder: "Your Name",
+        onchange: function onchange(e) {
+          return data.username = e.target.value;
+        },
+        value: data.username
+      })), m("fieldset.form-group", m("input.form-control.form-control-lg", {
+        type: "text",
+        placeholder: "Short bio about you",
+        onchange: function onchange(e) {
+          return data.bio = e.target.value;
+        },
+        value: data.bio
+      })), m("fieldset.form-group", m("fieldset.form-group", m("input.form-control.form-control-lg", {
+        type: "text",
+        placeholder: "Email",
+        onchange: function onchange(e) {
+          return data.email = e.target.value;
+        },
+        value: data.email
+      }))), m("fieldset.form-group", m("fieldset.form-group", m("input.form-control.form-control-lg", {
+        type: "password",
+        placeholder: "Password",
+        onchange: function onchange(e) {
+          return data.password = e.target.value;
+        },
+        value: data.password
+      }))), m("button.btn.btn-lg.btn-primary.pull-xs-right", " Update Settings ")]))]))));
+    }
+  };
+};
+
+var _default = Settings;
+exports["default"] = _default;
+});
+
+;require.register("pages/settings/model.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.loadTask = void 0;
+
+var loadTask = function loadTask() {};
+
+exports.loadTask = loadTask;
 });
 
 ;require.register("routes.js", function(exports, require, module) {
@@ -1640,7 +1781,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _index = _interopRequireDefault(require("./layout/index.js"));
+var _index = _interopRequireDefault(require("./layout/index"));
 
 var _index2 = _interopRequireDefault(require("./pages/home/index"));
 
@@ -1651,6 +1792,8 @@ var _index4 = _interopRequireDefault(require("./pages/profile/index"));
 var _register = _interopRequireDefault(require("./pages/auth/register"));
 
 var _login = _interopRequireDefault(require("./pages/auth/login"));
+
+var _index5 = _interopRequireDefault(require("./pages/settings/index"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -1696,9 +1839,23 @@ var routes = function routes(mdl) {
         }));
       }
     },
-    "/login": {
+    "/settings/:slug": {
       onmatch: function onmatch(_ref4) {
         var slug = _ref4.slug;
+        mdl.slug = slug;
+      },
+      render: function render() {
+        return m(_index["default"], {
+          mdl: mdl
+        }, m(_index5["default"], {
+          mdl: mdl,
+          key: mdl.slug
+        }));
+      }
+    },
+    "/login": {
+      onmatch: function onmatch(_ref5) {
+        var slug = _ref5.slug;
         mdl.slug = slug;
       },
       render: function render() {
@@ -1710,8 +1867,8 @@ var routes = function routes(mdl) {
       }
     },
     "/register": {
-      onmatch: function onmatch(_ref5) {
-        var slug = _ref5.slug;
+      onmatch: function onmatch(_ref6) {
+        var slug = _ref6.slug;
         mdl.slug = slug;
       },
       render: function render() {

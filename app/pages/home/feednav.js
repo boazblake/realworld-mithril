@@ -1,6 +1,6 @@
 import { without } from "ramda"
 
-export const FeedNav = ({ attrs: { fetchData } }) => {
+const FeedNav = ({ attrs: { fetchData } }) => {
   return {
     view: ({ attrs: { mdl, data } }) => {
       console.log(mdl)
@@ -62,3 +62,5 @@ export const FeedNav = ({ attrs: { fetchData } }) => {
     },
   }
 }
+
+export default FeedNav

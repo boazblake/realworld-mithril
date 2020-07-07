@@ -1,7 +1,3 @@
-const log = (m) => (v) => {
-  console.log(m, v), v
-}
-
 const getProfileTask = (http) => (mdl) => (username) =>
   http.getTask(mdl)(`profiles/${username}`)
 
@@ -14,10 +10,10 @@ const getAuthorFavoriteArticlesTask = (http) => (mdl) => (state) => (
   username
 ) =>
   http.getTask(mdl)(
-    `articles?limit=20&offset=${state.offset}&favorite=${username}`
+    `articles?limit=20&offset=${state.offset}&favorited=${username}`
   )
 
-export const loadDataTask = (http) => (mdl) => (state) => (data) =>
+export const loadDataTask = (http) => (mdl) => (state) =>
   Task.of((profile) => (authorArticles) => (authorFavoriteArticles) => ({
     ...profile,
     authorArticles,

@@ -1,9 +1,10 @@
-import Layout from "./layout/index.js"
+import Layout from "./layout/index"
 import Home from "./pages/home/index"
 import Article from "./pages/article/index"
 import Profile from "./pages/profile/index"
 import Register from "./pages/auth/register"
 import Login from "./pages/auth/login"
+import Settings from "./pages/settings/index"
 
 const routes = (mdl) => {
   return {
@@ -26,6 +27,13 @@ const routes = (mdl) => {
         mdl.slug = slug
       },
       render: () => m(Layout, { mdl }, m(Profile, { mdl, key: mdl.slug })),
+    },
+
+    "/settings/:slug": {
+      onmatch: ({ slug }) => {
+        mdl.slug = slug
+      },
+      render: () => m(Layout, { mdl }, m(Settings, { mdl, key: mdl.slug })),
     },
 
     "/login": {

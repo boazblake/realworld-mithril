@@ -1,8 +1,8 @@
 import Http from "Http"
 import { loadDataTask, getArticlesTask } from "./model"
-import { Banner, Loader, Paginator, ArticlePreview } from "components"
-import { SideBar } from "./sidebar"
-import { FeedNav } from "./feednav.js"
+import { Banner, Loader, Paginator, Articles } from "components"
+import SideBar from "./sidebar"
+import FeedNav from "./feednav.js"
 
 const Home = () => {
   const data = {
@@ -10,7 +10,8 @@ const Home = () => {
     articles: {},
   }
   const state = {
-    status: "loading",
+    feedStatus: "loading",
+    pageStatus: "loading",
     limit: 20,
     offset: 0,
     total: 0,
@@ -22,15 +23,16 @@ const Home = () => {
       data.articles = articles
       state.total = articlesCount
       data.tags.tagList = tags
-      state.status = "success"
+      state.pageStatus = "success"
+      state.feedStatus = "success"
     }
 
     const onError = (error) => {
       console.log("error", error)
       state.error = error
-      state.status = "error"
+      state.pageStatus = "error"
     }
-    state.status = "loading"
+    state.pageStatus = "loading"
     loadDataTask(Http)(mdl)(state)(data).fork(onError, onSuccess)
   }
 
@@ -38,15 +40,16 @@ const Home = () => {
     const onSuccess = ({ articles, articlesCount }) => {
       data.articles = articles
       state.total = articlesCount
-      state.status = "success"
+      state.feedStatus = "success"
     }
 
     const onError = (error) => {
       console.log("error", error)
       state.error = error
-      state.status = "error"
+      state.feedStatus = "error"
     }
-    state.status = "loading"
+
+    state.feedStatus = "loading"
     getArticlesTask(Http)(mdl)(state)(data).fork(onError, onSuccess)
   }
 
@@ -60,21 +63,22 @@ const Home = () => {
             m("p", "A place to share your knowledge."),
           ]),
 
-        state.status == "error" &&
+        state.pageStatus == "loading" &&
+          m(Loader, [m("h1.logo-font", `Loading Data`)]),
+
+        state.pageStatus == "error" &&
           m(Banner, [m("h1.logo-font", `Error Loading Data: ${state.error}`)]),
 
-        state.status == "success" &&
+        state.pageStatus == "success" &&
           m(
             ".container page",
             m(".row", [
               m(".col-md-9", [
                 m(FeedNav, { fetchData: loadArticles, mdl, data }),
-                data.articles.map((article) =>
-                  m(ArticlePreview, { mdl, data, article })
-                ),
 
-                state.status == "loading" &&
-                  m(Loader, [m("h1.logo-font", "Loading ...")]),
+                state.feedStatus == "loading" && m("p", "Loading Articles ..."),
+
+                state.feedStatus == "success" && m(Articles, { mdl, data }),
 
                 m(Paginator, {
                   mdl,
