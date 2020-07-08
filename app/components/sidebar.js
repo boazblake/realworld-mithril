@@ -1,4 +1,4 @@
-const SideBar = () => {
+export const SideBar = () => {
   const selectTag = (data, tag) => (e) => data.tags.selected.push(tag)
 
   return {
@@ -15,5 +15,3 @@ const SideBar = () => {
     },
   }
 }
-
-export default SideBar

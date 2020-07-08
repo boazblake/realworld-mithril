@@ -1,13 +1,12 @@
-import { without } from "ramda"
+import { isEmpty, without } from "ramda"
 
-const FeedNav = ({ attrs: { fetchData } }) => {
+export const FeedNav = ({ attrs: { fetchData } }) => {
   return {
     view: ({ attrs: { mdl, data } }) => {
-      console.log(mdl)
       return m(
         ".feed-toggle",
         m("ul.nav nav-pills outline-active", [
-          mdl.user &&
+          !isEmpty(mdl.user) &&
             m(
               "li.nav-item",
               m(
@@ -62,5 +61,3 @@ const FeedNav = ({ attrs: { fetchData } }) => {
     },
   }
 }
-
-export default FeedNav

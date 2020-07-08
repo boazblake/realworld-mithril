@@ -1,29 +1,17 @@
 import Http from "Http"
-import { validateLoginTask, loginTask } from "./model"
+
+export const loginTask = (http) => (mdl) => (user) =>
+  http.postTask(mdl)("users/login")({ user })
 
 const Login = () => {
-  const state = { errors: {}, isSubmitted: false, isValid: false }
+  const state = { errors: {} }
   const data = {
     email: "",
     password: "",
   }
 
-  const validate = (e) => {
-    const onSuccess = (s) => {
-      state.isValid = true
-    }
-
-    const onError = (errors) => {
-      state.isValid = false
-      state.errors = errors
-    }
-
-    validateLoginTask(data).fork(onError, onSuccess)
-  }
-
   const onSubmit = (mdl) => {
     const onSuccess = ({ user }) => {
-      state.isValid = true
       sessionStorage.setItem("token", `Token ${user.token}`)
       sessionStorage.setItem("user", JSON.stringify(user))
       mdl.user = user
@@ -31,13 +19,11 @@ const Login = () => {
     }
 
     const onError = (errors) => {
-      state.isValid = false
       state.errors = errors
       console.log(state.errors)
     }
 
-    state.isSubmitted = true
-    validateLoginTask(data).chain(loginTask(Http)(mdl)).fork(onError, onSuccess)
+    loginTask(Http)(mdl)(data).fork(onError, onSuccess)
   }
 
   return {
@@ -83,9 +69,7 @@ const Login = () => {
                     onchange: (e) => (data.password = e.target.value),
                     value: data.password,
                     onblur: (e) => state.isSubmitted && validate,
-                  }),
-                  state.errors.password &&
-                    m(".error-messages", m("span", state.errors.password))
+                  })
                 ),
                 m(
                   "button.btn.btn-lg.btn-primary.pull-xs-right",

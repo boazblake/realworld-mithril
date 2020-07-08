@@ -69,6 +69,7 @@ const call = (_headers) => (method) => (mdl) => (url) => (body) => {
 
 const Http = {
   getTask: (mdl) => (url) => call(getUserToken())("GET")(mdl)(url)(null),
+  deleteTask: (mdl) => (url) => call(getUserToken())("DELETE")(mdl)(url)(null),
   postTask: (mdl) => (url) => (data) =>
     call(getUserToken())("POST")(mdl)(url)(data),
 }

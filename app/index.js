@@ -1,8 +1,5 @@
 import routes from "./routes.js"
 import model from "./model.js"
-import { FunConfig } from "@boazblake/fun-config"
-
-FunConfig.configure()
 
 const root = document.body
 let winW = window.innerWidth

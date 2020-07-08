@@ -1,3 +1,5 @@
+import { isEmpty } from "ramda"
+
 const Header = () => {
   return {
     view: ({ attrs: { mdl } }) =>
@@ -8,8 +10,26 @@ const Header = () => {
           m("a.navbar-brand", { href: "#" }, "conduit"),
           m(
             "ul.nav navbar-nav pull-xs-right",
-            mdl.user
+            isEmpty(mdl.user)
               ? [
+                  m(
+                    "li.nav-item",
+                    m(
+                      m.route.Link,
+                      { class: "nav-link", href: "/register" },
+                      "Sign up"
+                    )
+                  ),
+                  m(
+                    "li.nav-item",
+                    m(
+                      m.route.Link,
+                      { class: "nav-link", href: "/login" },
+                      "Login"
+                    )
+                  ),
+                ]
+              : [
                   m(
                     "li.nav-item",
                     m(
@@ -38,24 +58,6 @@ const Header = () => {
                         href: `/profile/${mdl.user.username}`,
                       },
                       mdl.user.username
-                    )
-                  ),
-                ]
-              : [
-                  m(
-                    "li.nav-item",
-                    m(
-                      m.route.Link,
-                      { class: "nav-link", href: "/register" },
-                      "Sign up"
-                    )
-                  ),
-                  m(
-                    "li.nav-item",
-                    m(
-                      m.route.Link,
-                      { class: "nav-link", href: "/login" },
-                      "Login"
                     )
                   ),
                 ]

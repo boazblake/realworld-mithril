@@ -1,30 +1,21 @@
 import Http from "Http"
-import { validateRegisterTask, registerTask } from "./model"
+
+const registerTask = (http) => (mdl) => (user) =>
+  http.postTask(mdl)("users")({ user })
+
+const errorViewModel = (err) =>
+  Object.keys(err).map((k) => ({ key: k, values: err[k] }))
 
 const Register = () => {
-  const state = { errors: {}, isSubmitted: false, isValid: false }
+  const state = { errors: [] }
   const data = {
     username: "",
     email: "",
     password: "",
   }
 
-  const validate = (e) => {
-    const onSuccess = (s) => {
-      state.isValid = true
-    }
-
-    const onError = (errors) => {
-      state.isValid = false
-      state.errors = errors
-    }
-
-    validateRegisterTask(data).fork(onError, onSuccess)
-  }
-
   const onSubmit = (mdl) => {
     const onSuccess = ({ user }) => {
-      state.isValid = true
       mdl.user = user
       sessionStorage.setItem("token", `Token ${user.token}`)
       m.route.set("/home")
@@ -32,39 +23,41 @@ const Register = () => {
     }
 
     const onError = (errors) => {
-      state.isValid = false
-      state.errors = errors
+      state.errors = errorViewModel(errors)
       console.log(errors)
     }
 
     state.isSubmitted = true
-    validateRegisterTask(data)
-      .chain(registerTask(Http)(mdl))
-      .fork(onError, onSuccess)
+    registerTask(Http)(mdl)(data).fork(onError, onSuccess)
   }
 
   return {
     view: ({ attrs: { mdl } }) =>
       m(
-        "div.auth-page",
+        ".auth-page",
         m(
-          "div.container.page",
+          ".container.page",
           m(
-            "div.row",
-            m("div.col-md-6.offset-md-3.col-xs-12", [
+            ".row",
+            m(".col-md-6.offset-md-3.col-xs-12", [
               m("h1.text-xs-center", "Sign Up"),
               m(
                 "p.text-xs-center",
-                m(m.route.Link, { href: "/login" }, "Have an account?"),
-                state.errors["email or password"] &&
+                m(m.route.Link, { href: "/login" }, "Have an account?")
+              ),
+
+              state.errors &&
+                state.errors.map((e) =>
                   m(
                     ".error-messages",
                     m(
-                      "span",
-                      `email or password  ${state.errors["email or password"]}`
+                      "ul",
+                      `${e.key}`,
+                      e.values.map((error) => m("li", error))
                     )
                   )
-              ),
+                ),
+
               m("form", [
                 m(
                   "fieldset.form-group",
@@ -73,12 +66,7 @@ const Register = () => {
                     placeholder: "Your Name",
                     onchange: (e) => (data.username = e.target.value),
                     value: data.username,
-                    onblur: (e) => state.isSubmitted && validate,
-                  }),
-                  state.errors.username &&
-                    state.errors.username.map((error) =>
-                      m(".error-messages", m("span", error))
-                    )
+                  })
                 ),
 
                 m(
@@ -88,10 +76,7 @@ const Register = () => {
                     placeholder: "email",
                     onchange: (e) => (data.email = e.target.value),
                     value: data.email,
-                    onblur: (e) => state.isSubmitted && validate,
-                  }),
-                  state.errors.email &&
-                    m(".error-messages", m("span", state.errors.email))
+                  })
                 ),
                 m(
                   "fieldset.form-group",
@@ -100,10 +85,7 @@ const Register = () => {
                     placeholder: "password",
                     onchange: (e) => (data.password = e.target.value),
                     value: data.password,
-                    onblur: (e) => state.isSubmitted && validate,
-                  }),
-                  state.errors.password &&
-                    m(".error-messages", m("span", state.errors.password))
+                  })
                 ),
                 m(
                   "button.btn.btn-lg.btn-primary.pull-xs-right",

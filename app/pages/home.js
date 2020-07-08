@@ -1,8 +1,26 @@
+import { isEmpty } from "ramda"
 import Http from "Http"
-import { loadDataTask, getArticlesTask } from "./model"
-import { Banner, Loader, Paginator, Articles } from "components"
-import SideBar from "./sidebar"
-import FeedNav from "./feednav.js"
+import {
+  Banner,
+  Loader,
+  Paginator,
+  Articles,
+  FeedNav,
+  SideBar,
+} from "components"
+
+const getTagsTask = (http) => (mdl) => http.getTask(mdl)("tags")
+const getArticlesTask = (http) => (mdl) => (state) => (data) =>
+  data.tags.current == "feed"
+    ? http.getTask(mdl)(`articles/feed?limit=20&offset=${state.offset}`)
+    : http.getTask(mdl)(
+        `articles?limit=20&offset=${state.offset}&tag=${data.tags.current}`
+      )
+
+const loadDataTask = (http) => (mdl) => (state) => (data) =>
+  Task.of((tags) => (articles) => ({ ...tags, ...articles }))
+    .ap(getTagsTask(http)(mdl))
+    .ap(getArticlesTask(http)(mdl)(state)(data))
 
 const Home = () => {
   const data = {
@@ -56,8 +74,8 @@ const Home = () => {
   return {
     oninit: ({ attrs: { mdl } }) => loadInitData(mdl),
     view: ({ attrs: { mdl } }) => {
-      return m(".home", [
-        !mdl.user &&
+      return m(".home-page", [
+        isEmpty(mdl.user) &&
           m(Banner, [
             m("h1.logo-font", "conduit"),
             m("p", "A place to share your knowledge."),
@@ -78,16 +96,18 @@ const Home = () => {
 
                 state.feedStatus == "loading" && m("p", "Loading Articles ..."),
 
-                state.feedStatus == "success" && m(Articles, { mdl, data }),
+                state.feedStatus == "success" && [
+                  m(Articles, { mdl, data }),
 
-                m(Paginator, {
-                  mdl,
-                  state,
-                  fetchDataFor: (offset) => {
-                    state.offset = offset * state.limit
-                    loadArticles(mdl)
-                  },
-                }),
+                  m(Paginator, {
+                    mdl,
+                    state,
+                    fetchDataFor: (offset) => {
+                      state.offset = offset * state.limit
+                      loadArticles(mdl)
+                    },
+                  }),
+                ],
               ]),
 
               m(".col-md-3", m(SideBar, { mdl, data })),

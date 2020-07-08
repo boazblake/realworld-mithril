@@ -263,6 +263,11 @@ var Http = {
       return call(getUserToken())("GET")(mdl)(url)(null);
     };
   },
+  deleteTask: function deleteTask(mdl) {
+    return function (url) {
+      return call(getUserToken())("DELETE")(mdl)(url)(null);
+    };
+  },
   postTask: function postTask(mdl) {
     return function (url) {
       return function (data) {
@@ -293,122 +298,13 @@ var log = function log(m) {
 exports.log = log;
 });
 
-;require.register("Validations.js", function(exports, require, module) {
+;require.register("components/articles.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.isNilOrEmptyOrAtom = exports.allCaps = exports.inDateRange = exports.unique = exports.maxLengthNullable = exports.onlyNumeric = exports.urlFormat = exports.phoneFormat = exports.onlyAlphaNumericSpaceSpecial = exports.onlyAlphaNumericSpaceUnderscore = exports.onlyAlphaNumericSpace = exports.onlyAlphaNumericUnderscore = exports.onlyAlphaNumeric = exports.onlyAlpha = exports.emailFormat = exports.maxSize = exports.maxLength = exports.isNullOrEmpty = exports.isNotNullOrEmpty = exports.IsNotNil = exports.isRequired = exports.validate = exports.getOrElse = void 0;
-
-var _ramda = require("ramda");
-
-var _data = require("data.validation");
-
-var _data2 = _interopRequireDefault(require("data.maybe"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-var getOrElse = function getOrElse(val) {
-  return function (x) {
-    return x.getOrElse(val);
-  };
-};
-
-exports.getOrElse = getOrElse;
-var validate = (0, _ramda.curry)(function (rule, lens, msg, data) {
-  return rule((0, _ramda.view)(lens, data)) ? (0, _data.Success)(data) : (0, _data.Failure)([(0, _ramda.set)(lens, msg, {})]);
-});
-exports.validate = validate;
-var isRequired = (0, _ramda.compose)(_ramda.not, _ramda.isEmpty);
-exports.isRequired = isRequired;
-var IsNotNil = (0, _ramda.compose)(_ramda.not, _ramda.isNil);
-exports.IsNotNil = IsNotNil;
-
-var isNotNullOrEmpty = function isNotNullOrEmpty(data) {
-  return !isNullOrEmpty(data);
-};
-
-exports.isNotNullOrEmpty = isNotNullOrEmpty;
-
-var isNullOrEmpty = function isNullOrEmpty(data) {
-  return (0, _ramda.isNil)(data) || (0, _ramda.isEmpty)(data);
-};
-
-exports.isNullOrEmpty = isNullOrEmpty;
-
-var maxLength = function maxLength(max) {
-  return (0, _ramda.compose)((0, _ramda.gte)(max), _ramda.length);
-};
-
-exports.maxLength = maxLength;
-var maxSize = (0, _ramda.curry)(function (max, value) {
-  return (0, _ramda.gte)(max, value);
-});
-exports.maxSize = maxSize;
-var emailFormat = (0, _ramda.test)(/@/);
-exports.emailFormat = emailFormat;
-var onlyAlpha = (0, _ramda.test)(/^[a-zA-Z]*$/);
-exports.onlyAlpha = onlyAlpha;
-var onlyAlphaNumeric = (0, _ramda.test)(/^[a-zA-Z0-9]*$/);
-exports.onlyAlphaNumeric = onlyAlphaNumeric;
-var onlyAlphaNumericUnderscore = (0, _ramda.test)(/^[a-zA-Z0-9_]*$/);
-exports.onlyAlphaNumericUnderscore = onlyAlphaNumericUnderscore;
-var onlyAlphaNumericSpace = (0, _ramda.test)(/^[a-zA-Z0-9\s]*$/);
-exports.onlyAlphaNumericSpace = onlyAlphaNumericSpace;
-var onlyAlphaNumericSpaceUnderscore = (0, _ramda.test)(/^[a-zA-Z0-9_\s]*$/);
-exports.onlyAlphaNumericSpaceUnderscore = onlyAlphaNumericSpaceUnderscore;
-var onlyAlphaNumericSpaceSpecial = (0, _ramda.test)(/^[a-zA-Z0-9_.~!*''();:@&=+$,/?#[%-\]+\s]*$/);
-exports.onlyAlphaNumericSpaceSpecial = onlyAlphaNumericSpaceSpecial;
-var phoneFormat = (0, _ramda.test)(/^[0-9]{3}-[0-9]{3}-[0-9]{4}$/);
-exports.phoneFormat = phoneFormat;
-var urlFormat = (0, _ramda.test)(/^[a-zA-Z0-9_.~!*''();:@&=+$,/?#[%-\]+]*$/);
-exports.urlFormat = urlFormat;
-var onlyNumeric = (0, _ramda.test)(/^[0-9]*$/);
-exports.onlyNumeric = onlyNumeric;
-
-var maxLengthNullable = function maxLengthNullable(max) {
-  return (0, _ramda.compose)(getOrElse(false), (0, _ramda.map)((0, _ramda.gte)(max)), (0, _ramda.map)(_ramda.length), _data2["default"].fromNullable);
-};
-
-exports.maxLengthNullable = maxLengthNullable;
-var unique = (0, _ramda.curry)(function (keys, value) {
-  var lookup = _data2["default"].fromNullable(keys);
-
-  return !(0, _ramda.contains)((0, _ramda.toUpper)(value.toString()), (0, _ramda.map)(function (y) {
-    return (0, _ramda.toUpper)(y.toString());
-  }, lookup.getOrElse([])));
-});
-exports.unique = unique;
-var inDateRange = (0, _ramda.curry)(function (start, end, value) {
-  if (value == null || value === "") {
-    return true;
-  }
-
-  return new Date(start) <= new Date(value) && new Date(value) < new Date(end);
-});
-exports.inDateRange = inDateRange;
-
-var allCaps = function allCaps(str) {
-  return str.toUpperCase() === str;
-};
-
-exports.allCaps = allCaps;
-
-var isNilOrEmptyOrAtom = function isNilOrEmptyOrAtom(item) {
-  return (0, _ramda.isNil)(item) || (0, _ramda.isEmpty)(item) || item === "{$type:atom}";
-};
-
-exports.isNilOrEmptyOrAtom = isNilOrEmptyOrAtom;
-});
-
-;require.register("components/article-preview.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.ArticlePreview = void 0;
+exports.Articles = void 0;
 
 var ArticlePreview = function ArticlePreview() {
   return {
@@ -446,27 +342,14 @@ var ArticlePreview = function ArticlePreview() {
   };
 };
 
-exports.ArticlePreview = ArticlePreview;
-});
-
-;require.register("components/articles.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Articles = void 0;
-
-var _components = require("components");
-
 var Articles = function Articles() {
   return {
-    view: function view(_ref) {
-      var _ref$attrs = _ref.attrs,
-          mdl = _ref$attrs.mdl,
-          data = _ref$attrs.data;
-      return data.articles.any() ? data.articles.map(function (article) {
-        return m(_components.ArticlePreview, {
+    view: function view(_ref2) {
+      var _ref2$attrs = _ref2.attrs,
+          mdl = _ref2$attrs.mdl,
+          data = _ref2$attrs.data;
+      return data.articles ? data.articles.map(function (article) {
+        return m(ArticlePreview, {
           mdl: mdl,
           data: data,
           article: article
@@ -497,6 +380,263 @@ var Banner = function Banner() {
 };
 
 exports.Banner = Banner;
+});
+
+;require.register("components/comments.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Comments = void 0;
+
+var _Http = _interopRequireDefault(require("Http"));
+
+var _Utils = require("Utils");
+
+var _ramda = require("ramda");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var getCommentsTask = function getCommentsTask(http) {
+  return function (mdl) {
+    return function (slug) {
+      return http.getTask(mdl)("articles/".concat(slug, "/comments"));
+    };
+  };
+};
+
+var deleteCommentTask = function deleteCommentTask(http) {
+  return function (mdl) {
+    return function (slug) {
+      return function (id) {
+        return http.deleteTask(mdl)("articles/".concat(slug, "/comments/").concat(id));
+      };
+    };
+  };
+};
+
+var trimBody = (0, _ramda.over)((0, _ramda.lensProp)("body"), _ramda.trim);
+
+var submitTask = function submitTask(http) {
+  return function (mdl) {
+    return function (comment) {
+      console.log("comment", comment);
+      return http.postTask(mdl)("articles/".concat(mdl.slug, "/comments"))({
+        comment: comment
+      });
+    };
+  };
+};
+
+var CommentForm = function CommentForm(_ref) {
+  var _ref$attrs = _ref.attrs,
+      mdl = _ref$attrs.mdl,
+      reload = _ref$attrs.reload;
+  var comment = {
+    body: ""
+  };
+  var onError = (0, _Utils.log)("Error with form ");
+
+  var onSuccess = function onSuccess() {
+    comment.body = "";
+    reload();
+  };
+
+  var submit = function submit(comment) {
+    return submitTask(_Http["default"])(mdl)(trimBody(comment)).fork(onError, onSuccess);
+  };
+
+  return {
+    oninit: function oninit() {
+      return comment.body = "";
+    },
+    view: function view(_ref2) {
+      var mdl = _ref2.attrs.mdl;
+      return m("form.card.comment-form", [m(".card-block", m("textarea.form-control", {
+        rows: 3,
+        placeholder: "Write a comment ...",
+        onchange: function onchange(e) {
+          return comment.body = e.target.value;
+        },
+        value: comment.body
+      })), m(".card-footer", [m("img.comment-author-img", {
+        src: mdl.user.image
+      }), m("button.btn.btn-sm.btn-primary", {
+        onclick: function onclick(e) {
+          return submit(comment);
+        }
+      }, " Post Comment ")])]);
+    }
+  };
+};
+
+var Comment = function Comment() {
+  return {
+    view: function view(_ref3) {
+      var _ref3$attrs = _ref3.attrs,
+          mdl = _ref3$attrs.mdl,
+          _ref3$attrs$comment = _ref3$attrs.comment,
+          _ref3$attrs$comment$a = _ref3$attrs$comment.author,
+          image = _ref3$attrs$comment$a.image,
+          username = _ref3$attrs$comment$a.username,
+          body = _ref3$attrs$comment.body,
+          createdAt = _ref3$attrs$comment.createdAt,
+          id = _ref3$attrs$comment.id,
+          deleteComment = _ref3$attrs.deleteComment;
+      return m(".card", [m(".card-block", m("p.card-text", body)), m(".card-footer", [m(m.route.Link, {
+        "class": "comment-author"
+      }, m("img.comment-author-img", {
+        src: image
+      })), " ", m.trust("&nbsp;"), " ", m(m.route.Link, {
+        "class": "comment-author"
+      }, username), m("span.date-posted", createdAt), username == mdl.user.username && m("span.mod-options", [m("i.ion-trash-a", {
+        onclick: function onclick(e) {
+          return deleteComment(id);
+        }
+      })])])]);
+    }
+  };
+};
+
+var Comments = function Comments(_ref4) {
+  var mdl = _ref4.attrs.mdl;
+  var data = {
+    comments: []
+  };
+
+  var loadComments = function loadComments(mdl) {
+    var onSuccess = function onSuccess(_ref5) {
+      var comments = _ref5.comments;
+      return data.comments = comments;
+    };
+
+    var onError = (0, _Utils.log)("error with coomments");
+    getCommentsTask(_Http["default"])(mdl)(mdl.slug).fork(onError, onSuccess);
+  };
+
+  var _deleteComment = function deleteComment(id) {
+    var onSuccess = function onSuccess(_ref6) {
+      var comments = _ref6.comments;
+      return data.comments = comments;
+    };
+
+    var onError = (0, _Utils.log)("error with coomments");
+    deleteCommentTask(_Http["default"])(mdl)(mdl.slug)(id).chain(function (x) {
+      return getCommentsTask(_Http["default"])(mdl)(mdl.slug);
+    }).fork(onError, onSuccess);
+  };
+
+  return {
+    oninit: function oninit(_ref7) {
+      var mdl = _ref7.attrs.mdl;
+      return loadComments(mdl);
+    },
+    view: function view(_ref8) {
+      var mdl = _ref8.attrs.mdl;
+      return m(".row", m(".col-xs-12.col-md-8.offset-md-2", [m(CommentForm, {
+        mdl: mdl,
+        reload: function reload() {
+          return loadComments(mdl);
+        }
+      }), data.comments.map(function (c) {
+        return m(Comment, {
+          mdl: mdl,
+          comment: c,
+          deleteComment: function deleteComment(id) {
+            return _deleteComment(id);
+          }
+        });
+      })]));
+    }
+  };
+};
+
+exports.Comments = Comments;
+});
+
+;require.register("components/feed-nav.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.FeedNav = void 0;
+
+var _ramda = require("ramda");
+
+var FeedNav = function FeedNav(_ref) {
+  var fetchData = _ref.attrs.fetchData;
+  return {
+    view: function view(_ref2) {
+      var _ref2$attrs = _ref2.attrs,
+          mdl = _ref2$attrs.mdl,
+          data = _ref2$attrs.data;
+      return m(".feed-toggle", m("ul.nav nav-pills outline-active", [!(0, _ramda.isEmpty)(mdl.user) && m("li.nav-item", m(".nav-link ".concat(data.tags.current == "feed" && "active"), {
+        onclick: function onclick(e) {
+          data.tags.current = "feed";
+          fetchData(mdl);
+        }
+      }, "Your Feed")), m("li.nav-item", m(".nav-link ".concat(data.tags.current == "" && "active"), {
+        onclick: function onclick(e) {
+          data.tags.current = "";
+          fetchData(mdl);
+        }
+      }, "Global Feed")), data.tags.selected.map(function (tag) {
+        return m("li.nav-item", m(".nav-link ".concat(data.tags.current == tag && "active"), [m("span", {
+          onclick: function onclick(e) {
+            data.tags.current = tag;
+            fetchData(mdl);
+          }
+        }, tag), m("i.ion-close-circled", {
+          onclick: function onclick(e) {
+            return data.tags.selected = (0, _ramda.without)(tag, data.tags.selected);
+          }
+        })]));
+      })]));
+    }
+  };
+};
+
+exports.FeedNav = FeedNav;
+});
+
+;require.register("components/follow-favorite.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.FollowFavorite = void 0;
+
+var FollowFavorite = function FollowFavorite() {
+  return {
+    view: function view(_ref) {
+      var _ref$attrs = _ref.attrs,
+          mdl = _ref$attrs.mdl,
+          _ref$attrs$data = _ref$attrs.data,
+          _ref$attrs$data$autho = _ref$attrs$data.author,
+          username = _ref$attrs$data$autho.username,
+          image = _ref$attrs$data$autho.image,
+          createdAt = _ref$attrs$data.createdAt,
+          slug = _ref$attrs$data.slug;
+      return m(".article-actions", m(".article-meta", [m(m.route.Link, {
+        href: "profile/".concat(username)
+      }, m("img", {
+        src: image
+      })), m(".info", [m(m.route.Link, {
+        "class": "author",
+        href: "profile/".concat(username)
+      }, username), m("span.date", createdAt)]), mdl.user.username == username ? m(m.route.Link, {
+        "class": "btn btn-sm btn-outline-secondary",
+        href: "/editor/".concat(slug),
+        selector: "button"
+      }, [m("i.ion-edit"), "Edit Article"]) : m("button.btn.btn-sm.btn-outline-secondary", [m("i.ion-plus-round"), " ", m.trust("&nbsp;"), " Follow ".concat(username, " "), m("span.counter", "(10)")]), " ", m.trust("&nbsp;"), m.trust("&nbsp;"), " ", m("button.btn.btn-sm.btn-outline-primary", [m("i.ion-heart"), " ", m.trust("&nbsp;"), " Favorite Post ", m("span.counter", "(29)")])]));
+    }
+  };
+};
+
+exports.FollowFavorite = FollowFavorite;
 });
 
 ;require.register("components/index.js", function(exports, require, module) {
@@ -554,14 +694,50 @@ Object.keys(_articles).forEach(function (key) {
   });
 });
 
-var _articlePreview = require("./article-preview");
+var _followFavorite = require("./follow-favorite");
 
-Object.keys(_articlePreview).forEach(function (key) {
+Object.keys(_followFavorite).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function get() {
-      return _articlePreview[key];
+      return _followFavorite[key];
+    }
+  });
+});
+
+var _comments = require("./comments");
+
+Object.keys(_comments).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _comments[key];
+    }
+  });
+});
+
+var _feedNav = require("./feed-nav");
+
+Object.keys(_feedNav).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _feedNav[key];
+    }
+  });
+});
+
+var _sidebar = require("./sidebar");
+
+Object.keys(_sidebar).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function get() {
+      return _sidebar[key];
     }
   });
 });
@@ -607,7 +783,6 @@ var Paginator = function Paginator() {
   return {
     view: function view(_ref) {
       var _ref$attrs = _ref.attrs,
-          mdl = _ref$attrs.mdl,
           state = _ref$attrs.state,
           fetchDataFor = _ref$attrs.fetchDataFor;
       var total = state.total / state.limit;
@@ -615,7 +790,6 @@ var Paginator = function Paginator() {
 
       var range = _toConsumableArray(Array(total).keys()).slice(1);
 
-      console.log(state);
       return m("ul.pagination", range.map(function (page) {
         return m("li.page-item ".concat(page == current && "active"), m(".page-link active", {
           onclick: function onclick(e) {
@@ -630,6 +804,38 @@ var Paginator = function Paginator() {
 exports.Paginator = Paginator;
 });
 
+;require.register("components/sidebar.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.SideBar = void 0;
+
+var SideBar = function SideBar() {
+  var selectTag = function selectTag(data, tag) {
+    return function (e) {
+      return data.tags.selected.push(tag);
+    };
+  };
+
+  return {
+    view: function view(_ref) {
+      var _ref$attrs = _ref.attrs,
+          mdl = _ref$attrs.mdl,
+          data = _ref$attrs.data;
+      return m(".sidebar", [m("p", "Popular Tags"), m(".tag-list", data.tags.tagList.map(function (tag) {
+        return m(".tag-pill tag-default", {
+          onclick: selectTag(data, tag)
+        }, tag);
+      }))]);
+    }
+  };
+};
+
+exports.SideBar = SideBar;
+});
+
 ;require.register("index.js", function(exports, require, module) {
 "use strict";
 
@@ -637,11 +843,7 @@ var _routes = _interopRequireDefault(require("./routes.js"));
 
 var _model = _interopRequireDefault(require("./model.js"));
 
-var _funConfig = require("@boazblake/fun-config");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-_funConfig.FunConfig.configure();
 
 var root = document.body;
 var winW = window.innerWidth;
@@ -739,13 +941,21 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
+var _ramda = require("ramda");
+
 var Header = function Header() {
   return {
     view: function view(_ref) {
       var mdl = _ref.attrs.mdl;
       return m("nav.navbar navbar-light", m(".container", m("a.navbar-brand", {
         href: "#"
-      }, "conduit"), m("ul.nav navbar-nav pull-xs-right", mdl.user ? [m("li.nav-item", m(m.route.Link, {
+      }, "conduit"), m("ul.nav navbar-nav pull-xs-right", (0, _ramda.isEmpty)(mdl.user) ? [m("li.nav-item", m(m.route.Link, {
+        "class": "nav-link",
+        href: "/register"
+      }, "Sign up")), m("li.nav-item", m(m.route.Link, {
+        "class": "nav-link",
+        href: "/login"
+      }, "Login"))] : [m("li.nav-item", m(m.route.Link, {
         "class": "nav-link",
         href: "/editor"
       }, "New Article")), m("li.nav-item", m(m.route.Link, {
@@ -754,13 +964,7 @@ var Header = function Header() {
       }, "Settings")), m("li.nav-item", m(m.route.Link, {
         "class": "nav-link",
         href: "/profile/".concat(mdl.user.username)
-      }, mdl.user.username))] : [m("li.nav-item", m(m.route.Link, {
-        "class": "nav-link",
-        href: "/register"
-      }, "Sign up")), m("li.nav-item", m(m.route.Link, {
-        "class": "nav-link",
-        href: "/login"
-      }, "Login"))])));
+      }, mdl.user.username))])));
     }
   };
 };
@@ -817,13 +1021,14 @@ var model = {
     }
   },
   settings: {},
-  page: ""
+  page: "",
+  user: {}
 };
 var _default = model;
 exports["default"] = _default;
 });
 
-;require.register("pages/article/index.js", function(exports, require, module) {
+;require.register("pages/article.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -833,88 +1038,17 @@ exports["default"] = void 0;
 
 var _Http = _interopRequireDefault(require("Http"));
 
-var _model = require("./model");
-
 var _components = require("components");
 
-var _snarkdown = _interopRequireDefault(require("snarkdown"));
+var _marked = _interopRequireDefault(require("marked"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var FollowComponent = function FollowComponent() {
-  return {
-    view: function view(_ref) {
-      var _ref$attrs = _ref.attrs,
-          mdl = _ref$attrs.mdl,
-          _ref$attrs$data = _ref$attrs.data,
-          _ref$attrs$data$autho = _ref$attrs$data.author,
-          username = _ref$attrs$data$autho.username,
-          image = _ref$attrs$data$autho.image,
-          createdAt = _ref$attrs$data.createdAt,
-          slug = _ref$attrs$data.slug;
-      return m(".article-meta", [m(m.route.Link, {
-        href: "profile/".concat(username)
-      }, m("img", {
-        src: image
-      })), m(".info", [m(m.route.Link, {
-        "class": "author",
-        href: "profile/".concat(username)
-      }, username), m("span.date", createdAt)]), mdl.user.username == username ? m(m.route.Link, {
-        "class": "btn btn-sm btn-outline-secondary",
-        href: "/editor/".concat(slug),
-        selector: "button"
-      }, [m("i.ion-edit"), "Edit Article"]) : m("button.btn.btn-sm.btn-outline-secondary", [m("i.ion-plus-round"), " ", m.trust("&nbsp;"), " Follow ".concat(username, " "), m("span.counter", "(10)")]), " ", m.trust("&nbsp;"), m.trust("&nbsp;"), " ", m("button.btn.btn-sm.btn-outline-primary", [m("i.ion-heart"), " ", m.trust("&nbsp;"), " Favorite Post ", m("span.counter", "(29)")])]);
-    }
-  };
-};
-
-var CommentForm = function CommentForm() {
-  return {
-    view: function view(_ref2) {
-      var mdl = _ref2.attrs.mdl;
-      return m("form.card.comment-form", [m(".card-block", m("textarea.form-control[placeholder='Write a comment...'][rows='3']")), m(".card-footer", [m("img.comment-author-img[src='http://i.imgur.com/Qr71crq.jpg']"), m("button.btn.btn-sm.btn-primary", " Post Comment ")])]);
-    }
-  };
-};
-
-var Comment = function Comment() {
-  return {
-    view: function view(_ref3) {
-      var _ref3$attrs = _ref3.attrs,
-          mdl = _ref3$attrs.mdl,
-          _ref3$attrs$comment = _ref3$attrs.comment,
-          _ref3$attrs$comment$a = _ref3$attrs$comment.author,
-          image = _ref3$attrs$comment$a.image,
-          username = _ref3$attrs$comment$a.username,
-          body = _ref3$attrs$comment.body,
-          createdAt = _ref3$attrs$comment.createdAt,
-          id = _ref3$attrs$comment.id;
-      return m(".card", [m(".card-block", m("p.card-text", body)), m(".card-footer", [m(m.route.Link, {
-        "class": "comment-author"
-      }, m("img.comment-author-img", {
-        src: image
-      })), " ", m.trust("&nbsp;"), " ", m(m.route.Link, {
-        "class": "comment-author"
-      }, username), m("span.date-posted", createdAt)])]);
-    }
-  };
-};
-
-var ArticleComments = function ArticleComments() {
-  return {
-    view: function view(_ref4) {
-      var _ref4$attrs = _ref4.attrs,
-          mdl = _ref4$attrs.mdl,
-          comments = _ref4$attrs.comments;
-      return [m(CommentForm, {
-        mdl: mdl
-      }), comments.map(function (c) {
-        return m(Comment, {
-          mdl: mdl,
-          comment: c
-        });
-      })];
-    }
+var getArticleTask = function getArticleTask(http) {
+  return function (mdl) {
+    return function (slug) {
+      return http.getTask(mdl)("articles/".concat(slug));
+    };
   };
 };
 
@@ -925,12 +1059,11 @@ var Article = function Article() {
     error: null
   };
 
-  var onSuccess = function onSuccess(_ref5) {
-    var article = _ref5.article,
-        comments = _ref5.comments;
+  var onSuccess = function onSuccess(_ref) {
+    var article = _ref.article,
+        comments = _ref.comments;
     data.article = article;
     data.comments = comments;
-    console.log("data", data);
     state.status = "success";
   };
 
@@ -942,26 +1075,29 @@ var Article = function Article() {
 
   var loadData = function loadData(mdl) {
     state.status = "loading";
-    (0, _model.loadDataTask)(_Http["default"])(mdl)(mdl.slug).fork(onError, onSuccess);
+    getArticleTask(_Http["default"])(mdl)(mdl.slug).fork(onError, onSuccess);
   };
 
   return {
-    oninit: function oninit(_ref6) {
-      var mdl = _ref6.attrs.mdl;
+    oninit: function oninit(_ref2) {
+      var mdl = _ref2.attrs.mdl;
       return loadData(mdl);
     },
-    view: function view(_ref7) {
-      var mdl = _ref7.attrs.mdl;
-      return m(".article-page", [state.status == "loading" && m(_components.Banner, [m("h1.logo-font", "Loading ...")]), state.status == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.status == "success" && [m(".banner", m(".container", [m("h1", data.article.title), m(FollowComponent, {
+    view: function view(_ref3) {
+      var mdl = _ref3.attrs.mdl;
+      return m(".article-page", [state.status == "loading" && m(_components.Banner, [m("h1.logo-font", "Loading ...")]), state.status == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.status == "success" && [m(".banner", m(".container", [m("h1", data.article.title), m(_components.FollowFavorite, {
         mdl: mdl,
         data: data.article
-      })])), m(".container.page", [m(".row.article-content", m(".col-md-12.text-justify", m.trust((0, _snarkdown["default"])(data.article.body)))), m("hr"), m(".article-actions", m(FollowComponent, {
+      })])), m(".container.page", [m(".row.article-content", m(".col-md-12.text-justify", m.trust((0, _marked["default"])(data.article.body)))), m("hr"), m(_components.FollowFavorite, {
         mdl: mdl,
         data: data.article
-      })), m(".row", m(".col-xs-12.col-md-8.offset-md-2", m(ArticleComments, {
+      }), m(_components.Comments, {
         mdl: mdl,
-        comments: data.comments
-      })))])]]);
+        comments: data.comments,
+        reloadArticle: function reloadArticle() {
+          return loadData(mdl);
+        }
+      })])]]);
     }
   };
 };
@@ -970,29 +1106,21 @@ var _default = Article;
 exports["default"] = _default;
 });
 
-;require.register("pages/article/model.js", function(exports, require, module) {
+;require.register("pages/editor.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.loadDataTask = void 0;
+exports["default"] = exports.submitArticleTask = exports.loadArticleTask = void 0;
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+var _Http = _interopRequireDefault(require("Http"));
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+var _ramda = require("ramda");
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var getCommentsTask = function getCommentsTask(http) {
-  return function (mdl) {
-    return function (slug) {
-      return http.getTask(mdl)("articles/".concat(slug, "/comments"));
-    };
-  };
-};
-
-var getArticleTask = function getArticleTask(http) {
+var loadArticleTask = function loadArticleTask(http) {
   return function (mdl) {
     return function (slug) {
       return http.getTask(mdl)("articles/".concat(slug));
@@ -1000,340 +1128,20 @@ var getArticleTask = function getArticleTask(http) {
   };
 };
 
-var loadDataTask = function loadDataTask(http) {
+exports.loadArticleTask = loadArticleTask;
+var formatTags = (0, _ramda.over)((0, _ramda.lensProp)("tagList"), (0, _ramda.compose)(_ramda.uniq, (0, _ramda.split)(" "), _ramda.trim));
+
+var submitArticleTask = function submitArticleTask(http) {
   return function (mdl) {
-    return function (slug) {
-      return Task.of(function (article) {
-        return function (comments) {
-          return _objectSpread({}, article, {}, comments);
-        };
-      }).ap(getArticleTask(http)(mdl)(slug)).ap(getCommentsTask(http)(mdl)(slug));
-    };
-  };
-};
-
-exports.loadDataTask = loadDataTask;
-});
-
-;require.register("pages/auth/login.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports["default"] = void 0;
-
-var _Http = _interopRequireDefault(require("Http"));
-
-var _model = require("./model");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-var Login = function Login() {
-  var state = {
-    errors: {},
-    isSubmitted: false,
-    isValid: false
-  };
-  var data = {
-    email: "",
-    password: ""
-  };
-
-  var validate = function validate(e) {
-    var onSuccess = function onSuccess(s) {
-      state.isValid = true;
-    };
-
-    var onError = function onError(errors) {
-      state.isValid = false;
-      state.errors = errors;
-    };
-
-    (0, _model.validateLoginTask)(data).fork(onError, onSuccess);
-  };
-
-  var onSubmit = function onSubmit(mdl) {
-    var onSuccess = function onSuccess(_ref) {
-      var user = _ref.user;
-      state.isValid = true;
-      sessionStorage.setItem("token", "Token ".concat(user.token));
-      sessionStorage.setItem("user", JSON.stringify(user));
-      mdl.user = user;
-      m.route.set("/home");
-    };
-
-    var onError = function onError(errors) {
-      state.isValid = false;
-      state.errors = errors;
-      console.log(state.errors);
-    };
-
-    state.isSubmitted = true;
-    (0, _model.validateLoginTask)(data).chain((0, _model.loginTask)(_Http["default"])(mdl)).fork(onError, onSuccess);
-  };
-
-  return {
-    view: function view(_ref2) {
-      var mdl = _ref2.attrs.mdl;
-      return m("div.auth-page", m("div.container.page", m("div.row", m("div.col-md-6.offset-md-3.col-xs-12", [m("h1.text-xs-center", "Login"), m("p.text-xs-center", m(m.route.Link, {
-        href: "/register"
-      }, "Need an account?"), state.errors["email or password"] && m(".error-messages", m("span", "email or password  ".concat(state.errors["email or password"])))), m("form", [m("fieldset.form-group", m("input.form-control.form-control-lg", {
-        type: "text",
-        placeholder: "email",
-        onchange: function onchange(e) {
-          return data.email = e.target.value;
-        },
-        value: data.email,
-        onblur: function onblur(e) {
-          return state.isSubmitted && validate;
-        }
-      }), state.errors.email && m(".error-messages", m("span", state.errors.email))), m("fieldset.form-group", m("input.form-control.form-control-lg", {
-        type: "password",
-        placeholder: "password",
-        onchange: function onchange(e) {
-          return data.password = e.target.value;
-        },
-        value: data.password,
-        onblur: function onblur(e) {
-          return state.isSubmitted && validate;
-        }
-      }), state.errors.password && m(".error-messages", m("span", state.errors.password))), m("button.btn.btn-lg.btn-primary.pull-xs-right", {
-        type: "submit",
-        onclick: function onclick(e) {
-          return onSubmit(mdl);
-        }
-      }, "Login")])]))));
-    }
-  };
-};
-
-var _default = Login;
-exports["default"] = _default;
-});
-
-;require.register("pages/auth/model.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var _exportNames = {
-  loginTask: true,
-  registerTask: true
-};
-exports.registerTask = exports.loginTask = void 0;
-
-var _model = require("./model.validate");
-
-Object.keys(_model).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function get() {
-      return _model[key];
-    }
-  });
-});
-
-var loginTask = function loginTask(http) {
-  return function (mdl) {
-    return function (user) {
-      return http.postTask(mdl)("users/login")({
-        user: user
+    return function (article) {
+      return http.postTask(mdl)("articles")({
+        article: formatTags(article)
       });
     };
   };
 };
 
-exports.loginTask = loginTask;
-
-var registerTask = function registerTask(http) {
-  return function (mdl) {
-    return function (user) {
-      return http.postTask(mdl)("users")({
-        user: user
-      });
-    };
-  };
-};
-
-exports.registerTask = registerTask;
-});
-
-;require.register("pages/auth/model.validate.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.validateLoginTask = exports.validateRegisterTask = void 0;
-
-var _ramda = require("ramda");
-
-var _data = require("data.validation");
-
-var _Validations = require("Validations");
-
-var ValidateRegistration = (0, _data.Success)((0, _ramda.curryN)(3, _ramda.identity));
-var ValidateLogin = (0, _data.Success)((0, _ramda.curryN)(2, _ramda.identity));
-var nameLense = (0, _ramda.lensProp)("name");
-var passwordLense = (0, _ramda.lensProp)("password");
-var emailLense = (0, _ramda.lensProp)("email");
-var NAME_REQUIRED_MSG = "A Name is required";
-var PASSWORD_REQUIRED_MSG = "A Password is required";
-var EMAIL_REQUIRED_MSG = "An Email is required";
-var INVALID_EMAIL_FORMAT = "Email must be a valid format";
-
-var validateName = function validateName(data) {
-  return (0, _data.Success)(data).apLeft((0, _Validations.validate)(_Validations.isRequired, nameLense, NAME_REQUIRED_MSG, data));
-};
-
-var validateEmail = function validateEmail(data) {
-  return (0, _data.Success)(data).apLeft((0, _Validations.validate)(_Validations.isRequired, emailLense, EMAIL_REQUIRED_MSG, data)).apLeft((0, _Validations.validate)(_Validations.emailFormat, emailLense, INVALID_EMAIL_FORMAT, data));
-};
-
-var validatePassword = function validatePassword(data) {
-  return (0, _data.Success)(data).apLeft((0, _Validations.validate)(_Validations.isRequired, passwordLense, PASSWORD_REQUIRED_MSG, data));
-};
-
-var validateRegisterTask = function validateRegisterTask(data) {
-  return ValidateRegistration.ap(validateName(data)).ap(validateEmail(data)).ap(validatePassword(data)).failureMap(_ramda.mergeAll).toTask();
-};
-
-exports.validateRegisterTask = validateRegisterTask;
-
-var validateLoginTask = function validateLoginTask(data) {
-  return ValidateLogin.ap(validateEmail(data)).ap(validatePassword(data)).failureMap(_ramda.mergeAll).toTask();
-};
-
-exports.validateLoginTask = validateLoginTask;
-});
-
-;require.register("pages/auth/register.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports["default"] = void 0;
-
-var _Http = _interopRequireDefault(require("Http"));
-
-var _model = require("./model");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-var Register = function Register() {
-  var state = {
-    errors: {},
-    isSubmitted: false,
-    isValid: false
-  };
-  var data = {
-    username: "",
-    email: "",
-    password: ""
-  };
-
-  var validate = function validate(e) {
-    var onSuccess = function onSuccess(s) {
-      state.isValid = true;
-    };
-
-    var onError = function onError(errors) {
-      state.isValid = false;
-      state.errors = errors;
-    };
-
-    (0, _model.validateRegisterTask)(data).fork(onError, onSuccess);
-  };
-
-  var onSubmit = function onSubmit(mdl) {
-    var onSuccess = function onSuccess(_ref) {
-      var user = _ref.user;
-      state.isValid = true;
-      mdl.user = user;
-      sessionStorage.setItem("token", "Token ".concat(user.token));
-      m.route.set("/home");
-      console.log("success", user);
-    };
-
-    var onError = function onError(errors) {
-      state.isValid = false;
-      state.errors = errors;
-      console.log(errors);
-    };
-
-    state.isSubmitted = true;
-    (0, _model.validateRegisterTask)(data).chain((0, _model.registerTask)(_Http["default"])(mdl)).fork(onError, onSuccess);
-  };
-
-  return {
-    view: function view(_ref2) {
-      var mdl = _ref2.attrs.mdl;
-      return m("div.auth-page", m("div.container.page", m("div.row", m("div.col-md-6.offset-md-3.col-xs-12", [m("h1.text-xs-center", "Sign Up"), m("p.text-xs-center", m(m.route.Link, {
-        href: "/login"
-      }, "Have an account?"), state.errors["email or password"] && m(".error-messages", m("span", "email or password  ".concat(state.errors["email or password"])))), m("form", [m("fieldset.form-group", m("input.form-control.form-control-lg", {
-        type: "text",
-        placeholder: "Your Name",
-        onchange: function onchange(e) {
-          return data.username = e.target.value;
-        },
-        value: data.username,
-        onblur: function onblur(e) {
-          return state.isSubmitted && validate;
-        }
-      }), state.errors.username && state.errors.username.map(function (error) {
-        return m(".error-messages", m("span", error));
-      })), m("fieldset.form-group", m("input.form-control.form-control-lg", {
-        type: "text",
-        placeholder: "email",
-        onchange: function onchange(e) {
-          return data.email = e.target.value;
-        },
-        value: data.email,
-        onblur: function onblur(e) {
-          return state.isSubmitted && validate;
-        }
-      }), state.errors.email && m(".error-messages", m("span", state.errors.email))), m("fieldset.form-group", m("input.form-control.form-control-lg", {
-        type: "password",
-        placeholder: "password",
-        onchange: function onchange(e) {
-          return data.password = e.target.value;
-        },
-        value: data.password,
-        onblur: function onblur(e) {
-          return state.isSubmitted && validate;
-        }
-      }), state.errors.password && m(".error-messages", m("span", state.errors.password))), m("button.btn.btn-lg.btn-primary.pull-xs-right", {
-        type: "submit",
-        onclick: function onclick(e) {
-          return onSubmit(mdl);
-        }
-      }, "Sign Up")])]))));
-    }
-  };
-};
-
-var _default = Register;
-exports["default"] = _default;
-});
-
-;require.register("pages/editor/index.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports["default"] = void 0;
-
-var _Http = _interopRequireDefault(require("Http"));
-
-var _model = require("./model");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+exports.submitArticleTask = submitArticleTask;
 
 var Editor = function Editor(_ref) {
   var mdl = _ref.attrs.mdl;
@@ -1352,15 +1160,13 @@ var Editor = function Editor(_ref) {
     };
 
     if (mdl.slug) {
-      console.log(mdl);
-      (0, _model.loadArticleTask)(_Http["default"])(mdl)(mdl.slug).fork(onError, onSuccess);
+      loadArticleTask(_Http["default"])(mdl)(mdl.slug).fork(onError, onSuccess);
     }
   };
 
   var submitData = function submitData(data) {
     var onSuccess = function onSuccess(_ref3) {
       var slug = _ref3.article.slug;
-      console.log(slug);
       m.route.set("/article/".concat(slug));
     };
 
@@ -1368,7 +1174,7 @@ var Editor = function Editor(_ref) {
       state.errors = errors;
     };
 
-    (0, _model.submitArticleTask)(_Http["default"])(mdl)(data).fork(onError, onSuccess);
+    submitArticleTask(_Http["default"])(mdl)(data).fork(onError, onSuccess);
   };
 
   return {
@@ -1402,9 +1208,9 @@ var Editor = function Editor(_ref) {
         type: "text",
         placeholder: "Enter tags",
         onchange: function onchange(e) {
-          return data.tags = e.target.value;
+          return data.tagList = e.target.value;
         },
-        value: data.tags
+        value: data.tagList
       })), m("button.btn-lg.pull-xs-right.btn-primary", {
         onclick: function onclick(e) {
           return submitData(data);
@@ -1418,38 +1224,7 @@ var _default = Editor;
 exports["default"] = _default;
 });
 
-;require.register("pages/editor/model.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.submitArticleTask = exports.loadArticleTask = void 0;
-
-var loadArticleTask = function loadArticleTask(http) {
-  return function (mdl) {
-    return function (slug) {
-      return http.getTask(mdl)("articles/".concat(slug));
-    };
-  };
-};
-
-exports.loadArticleTask = loadArticleTask;
-
-var submitArticleTask = function submitArticleTask(http) {
-  return function (mdl) {
-    return function (article) {
-      return http.postTask(mdl)("articles")({
-        article: article
-      });
-    };
-  };
-};
-
-exports.submitArticleTask = submitArticleTask;
-});
-
-;require.register("pages/home/feednav.js", function(exports, require, module) {
+;require.register("pages/home.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1459,63 +1234,47 @@ exports["default"] = void 0;
 
 var _ramda = require("ramda");
 
-var FeedNav = function FeedNav(_ref) {
-  var fetchData = _ref.attrs.fetchData;
-  return {
-    view: function view(_ref2) {
-      var _ref2$attrs = _ref2.attrs,
-          mdl = _ref2$attrs.mdl,
-          data = _ref2$attrs.data;
-      console.log(mdl);
-      return m(".feed-toggle", m("ul.nav nav-pills outline-active", [mdl.user && m("li.nav-item", m(".nav-link ".concat(data.tags.current == "feed" && "active"), {
-        onclick: function onclick(e) {
-          data.tags.current = "feed";
-          fetchData(mdl);
-        }
-      }, "Your Feed")), m("li.nav-item", m(".nav-link ".concat(data.tags.current == "" && "active"), {
-        onclick: function onclick(e) {
-          data.tags.current = "";
-          fetchData(mdl);
-        }
-      }, "Global Feed")), data.tags.selected.map(function (tag) {
-        return m("li.nav-item", m(".nav-link ".concat(data.tags.current == tag && "active"), [m("span", {
-          onclick: function onclick(e) {
-            data.tags.current = tag;
-            fetchData(mdl);
-          }
-        }, tag), m("i.ion-close-circled", {
-          onclick: function onclick(e) {
-            return data.tags.selected = (0, _ramda.without)(tag, data.tags.selected);
-          }
-        })]));
-      })]));
-    }
-  };
-};
-
-var _default = FeedNav;
-exports["default"] = _default;
-});
-
-;require.register("pages/home/index.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports["default"] = void 0;
-
 var _Http = _interopRequireDefault(require("Http"));
-
-var _model = require("./model");
 
 var _components = require("components");
 
-var _sidebar = _interopRequireDefault(require("./sidebar"));
-
-var _feednav = _interopRequireDefault(require("./feednav.js"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var getTagsTask = function getTagsTask(http) {
+  return function (mdl) {
+    return http.getTask(mdl)("tags");
+  };
+};
+
+var getArticlesTask = function getArticlesTask(http) {
+  return function (mdl) {
+    return function (state) {
+      return function (data) {
+        return data.tags.current == "feed" ? http.getTask(mdl)("articles/feed?limit=20&offset=".concat(state.offset)) : http.getTask(mdl)("articles?limit=20&offset=".concat(state.offset, "&tag=").concat(data.tags.current));
+      };
+    };
+  };
+};
+
+var loadDataTask = function loadDataTask(http) {
+  return function (mdl) {
+    return function (state) {
+      return function (data) {
+        return Task.of(function (tags) {
+          return function (articles) {
+            return _objectSpread({}, tags, {}, articles);
+          };
+        }).ap(getTagsTask(http)(mdl)).ap(getArticlesTask(http)(mdl)(state)(data));
+      };
+    };
+  };
+};
 
 var Home = function Home() {
   var data = {
@@ -1554,7 +1313,7 @@ var Home = function Home() {
     };
 
     state.pageStatus = "loading";
-    (0, _model.loadDataTask)(_Http["default"])(mdl)(state)(data).fork(onError, onSuccess);
+    loadDataTask(_Http["default"])(mdl)(state)(data).fork(onError, onSuccess);
   };
 
   var loadArticles = function loadArticles(mdl) {
@@ -1573,7 +1332,7 @@ var Home = function Home() {
     };
 
     state.feedStatus = "loading";
-    (0, _model.getArticlesTask)(_Http["default"])(mdl)(state)(data).fork(onError, onSuccess);
+    getArticlesTask(_Http["default"])(mdl)(state)(data).fork(onError, onSuccess);
   };
 
   return {
@@ -1583,11 +1342,11 @@ var Home = function Home() {
     },
     view: function view(_ref4) {
       var mdl = _ref4.attrs.mdl;
-      return m(".home", [!mdl.user && m(_components.Banner, [m("h1.logo-font", "conduit"), m("p", "A place to share your knowledge.")]), state.pageStatus == "loading" && m(_components.Loader, [m("h1.logo-font", "Loading Data")]), state.pageStatus == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.pageStatus == "success" && m(".container page", m(".row", [m(".col-md-9", [m(_feednav["default"], {
+      return m(".home-page", [(0, _ramda.isEmpty)(mdl.user) && m(_components.Banner, [m("h1.logo-font", "conduit"), m("p", "A place to share your knowledge.")]), state.pageStatus == "loading" && m(_components.Loader, [m("h1.logo-font", "Loading Data")]), state.pageStatus == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.pageStatus == "success" && m(".container page", m(".row", [m(".col-md-9", [m(_components.FeedNav, {
         fetchData: loadArticles,
         mdl: mdl,
         data: data
-      }), state.feedStatus == "loading" && m("p", "Loading Articles ..."), state.feedStatus == "success" && m(_components.Articles, {
+      }), state.feedStatus == "loading" && m("p", "Loading Articles ..."), state.feedStatus == "success" && [m(_components.Articles, {
         mdl: mdl,
         data: data
       }), m(_components.Paginator, {
@@ -1597,7 +1356,7 @@ var Home = function Home() {
           state.offset = offset * state.limit;
           loadArticles(mdl);
         }
-      })]), m(".col-md-3", m(_sidebar["default"], {
+      })]]), m(".col-md-3", m(_components.SideBar, {
         mdl: mdl,
         data: data
       }))]))]);
@@ -1609,179 +1368,108 @@ var _default = Home;
 exports["default"] = _default;
 });
 
-;require.register("pages/home/model.js", function(exports, require, module) {
+;require.register("pages/login.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.loadDataTask = exports.getArticlesTask = void 0;
+exports["default"] = exports.loginTask = void 0;
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+var _Http = _interopRequireDefault(require("Http"));
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var getTagsTask = function getTagsTask(http) {
+var loginTask = function loginTask(http) {
   return function (mdl) {
-    return http.getTask(mdl)("tags");
-  };
-};
-
-var getArticlesTask = function getArticlesTask(http) {
-  return function (mdl) {
-    return function (state) {
-      return function (data) {
-        return data.tags.current == "feed" ? http.getTask(mdl)("articles/feed?limit=20&offset=".concat(state.offset)) : http.getTask(mdl)("articles?limit=20&offset=".concat(state.offset, "&tag=").concat(data.tags.current));
-      };
+    return function (user) {
+      return http.postTask(mdl)("users/login")({
+        user: user
+      });
     };
   };
 };
 
-exports.getArticlesTask = getArticlesTask;
+exports.loginTask = loginTask;
 
-var loadDataTask = function loadDataTask(http) {
-  return function (mdl) {
-    return function (state) {
-      return function (data) {
-        return Task.of(function (tags) {
-          return function (articles) {
-            return _objectSpread({}, tags, {}, articles);
-          };
-        }).ap(getTagsTask(http)(mdl)).ap(getArticlesTask(http)(mdl)(state)(data));
-      };
-    };
+var Login = function Login() {
+  var state = {
+    errors: {}
   };
-};
+  var data = {
+    email: "",
+    password: ""
+  };
 
-exports.loadDataTask = loadDataTask;
-});
-
-;require.register("pages/home/sidebar.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports["default"] = void 0;
-
-var SideBar = function SideBar() {
-  var selectTag = function selectTag(data, tag) {
-    return function (e) {
-      return data.tags.selected.push(tag);
+  var onSubmit = function onSubmit(mdl) {
+    var onSuccess = function onSuccess(_ref) {
+      var user = _ref.user;
+      sessionStorage.setItem("token", "Token ".concat(user.token));
+      sessionStorage.setItem("user", JSON.stringify(user));
+      mdl.user = user;
+      m.route.set("/home");
     };
+
+    var onError = function onError(errors) {
+      state.errors = errors;
+      console.log(state.errors);
+    };
+
+    loginTask(_Http["default"])(mdl)(data).fork(onError, onSuccess);
   };
 
   return {
-    view: function view(_ref) {
-      var _ref$attrs = _ref.attrs,
-          mdl = _ref$attrs.mdl,
-          data = _ref$attrs.data;
-      return m(".sidebar", [m("p", "Popular Tags"), m(".tag-list", data.tags.tagList.map(function (tag) {
-        return m(".tag-pill tag-default", {
-          onclick: selectTag(data, tag)
-        }, tag);
-      }))]);
+    view: function view(_ref2) {
+      var mdl = _ref2.attrs.mdl;
+      return m("div.auth-page", m("div.container.page", m("div.row", m("div.col-md-6.offset-md-3.col-xs-12", [m("h1.text-xs-center", "Login"), m("p.text-xs-center", m(m.route.Link, {
+        href: "/register"
+      }, "Need an account?"), state.errors["email or password"] && m(".error-messages", m("span", "email or password  ".concat(state.errors["email or password"])))), m("form", [m("fieldset.form-group", m("input.form-control.form-control-lg", {
+        type: "text",
+        placeholder: "email",
+        onchange: function onchange(e) {
+          return data.email = e.target.value;
+        },
+        value: data.email,
+        onblur: function onblur(e) {
+          return state.isSubmitted && validate;
+        }
+      }), state.errors.email && m(".error-messages", m("span", state.errors.email))), m("fieldset.form-group", m("input.form-control.form-control-lg", {
+        type: "password",
+        placeholder: "password",
+        onchange: function onchange(e) {
+          return data.password = e.target.value;
+        },
+        value: data.password,
+        onblur: function onblur(e) {
+          return state.isSubmitted && validate;
+        }
+      })), m("button.btn.btn-lg.btn-primary.pull-xs-right", {
+        type: "submit",
+        onclick: function onclick(e) {
+          return onSubmit(mdl);
+        }
+      }, "Login")])]))));
     }
   };
 };
 
-var _default = SideBar;
+var _default = Login;
 exports["default"] = _default;
 });
 
-;require.register("pages/profile/index.js", function(exports, require, module) {
+;require.register("pages/profile.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = void 0;
+exports["default"] = exports.loadDataTask = void 0;
 
 var _Http = _interopRequireDefault(require("Http"));
-
-var _model = require("./model");
 
 var _components = require("components");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-var Profile = function Profile() {
-  var data = {};
-  var state = {
-    status: "loading",
-    showFaveArticles: false,
-    limit: 20,
-    offset: 0,
-    total: 0,
-    error: null
-  };
-
-  var onSuccess = function onSuccess(_ref) {
-    var authorArticles = _ref.authorArticles,
-        authorFavoriteArticles = _ref.authorFavoriteArticles,
-        profile = _ref.profile;
-    data.authorArticles = authorArticles;
-    data.authorFavoriteArticles = authorFavoriteArticles;
-    data.profile = profile;
-    state.status = "success";
-  };
-
-  var onError = function onError(error) {
-    console.log("error", error);
-    state.error = error;
-    state.status = "error";
-  };
-
-  var loadData = function loadData(mdl) {
-    state.status = "loading";
-    (0, _model.loadDataTask)(_Http["default"])(mdl)(state).fork(onError, onSuccess);
-  };
-
-  return {
-    oninit: function oninit(_ref2) {
-      var mdl = _ref2.attrs.mdl;
-      return loadData(mdl);
-    },
-    view: function view(_ref3) {
-      var mdl = _ref3.attrs.mdl;
-      return m(".profile-page", state.status == "loading" && m(_components.Loader, [m("h1.logo-font", "Loading ...")]), state.status == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.status == "success" && [m(".user-info", m(".container", m(".row", m(".col-xs-12.col-md-10.offset-md-1", [m("img.user-img", {
-        src: data.profile.image
-      }), m("h4", data.profile.username), m("p", data.profile.bio), data.profile.username !== mdl.user.username ? m("button.btn.btn-sm.btn-outline-secondary.action-btn", [m("i.ion-plus-round"), " ", m.trust("&nbsp;"), "Follow ".concat(data.profile.username)]) : m("button.btn.btn-sm.btn-outline-secondary.action-btn", {
-        onclick: function onclick(e) {
-          return m.route.set("/settings/".concat(data.profile.username));
-        }
-      }, [m("i.ion-gear-a"), " ", m.trust("&nbsp;"), "Edit Profile Settings"])])))), m(".container", m(".row", m(".col-xs-12.col-md-10.offset-md-1", [m(".articles-toggle", m("ul.nav.nav-pills.outline-active", [m("li.nav-item", m(".nav-link ".concat(!state.showFaveArticles && "active"), {
-        onclick: function onclick(e) {
-          return state.showFaveArticles = false;
-        }
-      }, "My Articles")), m("li.nav-item", m(".nav-link ".concat(state.showFaveArticles && "active"), {
-        onclick: function onclick(e) {
-          return state.showFaveArticles = true;
-        }
-      }, "Favorited Articles"))])), state.showFaveArticles ? m(_components.Articles, {
-        mdl: mdl,
-        data: data.authorFavoriteArticles
-      }) : m(_components.Articles, {
-        mdl: mdl,
-        data: data.authorArticles
-      })])))]);
-    }
-  };
-};
-
-var _default = Profile;
-exports["default"] = _default;
-});
-
-;require.register("pages/profile/model.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.loadDataTask = void 0;
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
@@ -1835,9 +1523,76 @@ var loadDataTask = function loadDataTask(http) {
 };
 
 exports.loadDataTask = loadDataTask;
+
+var Profile = function Profile() {
+  var data = {};
+  var state = {
+    status: "loading",
+    showFaveArticles: false,
+    limit: 20,
+    offset: 0,
+    total: 0,
+    error: null
+  };
+
+  var onSuccess = function onSuccess(_ref) {
+    var authorArticles = _ref.authorArticles,
+        authorFavoriteArticles = _ref.authorFavoriteArticles,
+        profile = _ref.profile;
+    data.authorArticles = authorArticles;
+    data.authorFavoriteArticles = authorFavoriteArticles;
+    data.profile = profile;
+    state.status = "success";
+  };
+
+  var onError = function onError(error) {
+    console.log("error", error);
+    state.error = error;
+    state.status = "error";
+  };
+
+  var loadData = function loadData(mdl) {
+    state.status = "loading";
+    loadDataTask(_Http["default"])(mdl)(state).fork(onError, onSuccess);
+  };
+
+  return {
+    oninit: function oninit(_ref2) {
+      var mdl = _ref2.attrs.mdl;
+      return loadData(mdl);
+    },
+    view: function view(_ref3) {
+      var mdl = _ref3.attrs.mdl;
+      return m(".profile-page", state.status == "loading" && m(_components.Loader, [m("h1.logo-font", "Loading ...")]), state.status == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.status == "success" && [m(".user-info", m(".container", m(".row", m(".col-xs-12.col-md-10.offset-md-1", [m("img.user-img", {
+        src: data.profile.image
+      }), m("h4", data.profile.username), m("p", data.profile.bio), data.profile.username !== mdl.user.username ? m("button.btn.btn-sm.btn-outline-secondary.action-btn", [m("i.ion-plus-round"), " ", m.trust("&nbsp;"), "Follow ".concat(data.profile.username)]) : m("button.btn.btn-sm.btn-outline-secondary.action-btn", {
+        onclick: function onclick(e) {
+          return m.route.set("/settings/".concat(data.profile.username));
+        }
+      }, [m("i.ion-gear-a"), " ", m.trust("&nbsp;"), "Edit Profile Settings"])])))), m(".container", m(".row", m(".col-xs-12.col-md-10.offset-md-1", [m(".articles-toggle", m("ul.nav.nav-pills.outline-active", [m("li.nav-item", m(".nav-link ".concat(!state.showFaveArticles && "active"), {
+        onclick: function onclick(e) {
+          return state.showFaveArticles = false;
+        }
+      }, "My Articles")), m("li.nav-item", m(".nav-link ".concat(state.showFaveArticles && "active"), {
+        onclick: function onclick(e) {
+          return state.showFaveArticles = true;
+        }
+      }, "Favorited Articles"))])), state.showFaveArticles ? m(_components.Articles, {
+        mdl: mdl,
+        data: data.authorFavoriteArticles
+      }) : m(_components.Articles, {
+        mdl: mdl,
+        data: data.authorArticles
+      })])))]);
+    }
+  };
+};
+
+var _default = Profile;
+exports["default"] = _default;
 });
 
-;require.register("pages/settings/index.js", function(exports, require, module) {
+;require.register("pages/register.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1845,7 +1600,112 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _model = require("./model");
+var _Http = _interopRequireDefault(require("Http"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var registerTask = function registerTask(http) {
+  return function (mdl) {
+    return function (user) {
+      return http.postTask(mdl)("users")({
+        user: user
+      });
+    };
+  };
+};
+
+var errorViewModel = function errorViewModel(err) {
+  return Object.keys(err).map(function (k) {
+    return {
+      key: k,
+      values: err[k]
+    };
+  });
+};
+
+var Register = function Register() {
+  var state = {
+    errors: []
+  };
+  var data = {
+    username: "",
+    email: "",
+    password: ""
+  };
+
+  var onSubmit = function onSubmit(mdl) {
+    var onSuccess = function onSuccess(_ref) {
+      var user = _ref.user;
+      mdl.user = user;
+      sessionStorage.setItem("token", "Token ".concat(user.token));
+      m.route.set("/home");
+      console.log("success", user);
+    };
+
+    var onError = function onError(errors) {
+      state.errors = errorViewModel(errors);
+      console.log(errors);
+    };
+
+    state.isSubmitted = true;
+    registerTask(_Http["default"])(mdl)(data).fork(onError, onSuccess);
+  };
+
+  return {
+    view: function view(_ref2) {
+      var mdl = _ref2.attrs.mdl;
+      return m(".auth-page", m(".container.page", m(".row", m(".col-md-6.offset-md-3.col-xs-12", [m("h1.text-xs-center", "Sign Up"), m("p.text-xs-center", m(m.route.Link, {
+        href: "/login"
+      }, "Have an account?")), state.errors && state.errors.map(function (e) {
+        return m(".error-messages", m("ul", "".concat(e.key), e.values.map(function (error) {
+          return m("li", error);
+        })));
+      }), m("form", [m("fieldset.form-group", m("input.form-control.form-control-lg", {
+        type: "text",
+        placeholder: "Your Name",
+        onchange: function onchange(e) {
+          return data.username = e.target.value;
+        },
+        value: data.username
+      })), m("fieldset.form-group", m("input.form-control.form-control-lg", {
+        type: "text",
+        placeholder: "email",
+        onchange: function onchange(e) {
+          return data.email = e.target.value;
+        },
+        value: data.email
+      })), m("fieldset.form-group", m("input.form-control.form-control-lg", {
+        type: "password",
+        placeholder: "password",
+        onchange: function onchange(e) {
+          return data.password = e.target.value;
+        },
+        value: data.password
+      })), m("button.btn.btn-lg.btn-primary.pull-xs-right", {
+        type: "submit",
+        onclick: function onclick(e) {
+          return onSubmit(mdl);
+        }
+      }, "Sign Up")])]))));
+    }
+  };
+};
+
+var _default = Register;
+exports["default"] = _default;
+});
+
+;require.register("pages/settings.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = exports.loadTask = void 0;
+
+var loadTask = function loadTask() {};
+
+exports.loadTask = loadTask;
 
 var Settings = function Settings(_ref) {
   var mdl = _ref.attrs.mdl;
@@ -1897,19 +1757,6 @@ var _default = Settings;
 exports["default"] = _default;
 });
 
-;require.register("pages/settings/model.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.loadTask = void 0;
-
-var loadTask = function loadTask() {};
-
-exports.loadTask = loadTask;
-});
-
 ;require.register("routes.js", function(exports, require, module) {
 "use strict";
 
@@ -1920,19 +1767,19 @@ exports["default"] = void 0;
 
 var _index = _interopRequireDefault(require("./layout/index"));
 
-var _index2 = _interopRequireDefault(require("./pages/home/index"));
+var _home = _interopRequireDefault(require("./pages/home"));
 
-var _index3 = _interopRequireDefault(require("./pages/article/index"));
+var _article = _interopRequireDefault(require("./pages/article"));
 
-var _index4 = _interopRequireDefault(require("./pages/profile/index"));
+var _profile = _interopRequireDefault(require("./pages/profile"));
 
-var _register = _interopRequireDefault(require("./pages/auth/register"));
+var _register = _interopRequireDefault(require("./pages/register"));
 
-var _login = _interopRequireDefault(require("./pages/auth/login"));
+var _login = _interopRequireDefault(require("./pages/login"));
 
-var _index5 = _interopRequireDefault(require("./pages/settings/index"));
+var _settings = _interopRequireDefault(require("./pages/settings"));
 
-var _index6 = _interopRequireDefault(require("./pages/editor/index"));
+var _editor = _interopRequireDefault(require("./pages/editor"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -1946,7 +1793,7 @@ var routes = function routes(mdl) {
       render: function render() {
         return m(_index["default"], {
           mdl: mdl
-        }, m(_index2["default"], {
+        }, m(_home["default"], {
           mdl: mdl
         }));
       }
@@ -1959,7 +1806,7 @@ var routes = function routes(mdl) {
       render: function render() {
         return m(_index["default"], {
           mdl: mdl
-        }, m(_index6["default"], {
+        }, m(_editor["default"], {
           mdl: mdl
         }));
       }
@@ -1972,7 +1819,7 @@ var routes = function routes(mdl) {
       render: function render() {
         return m(_index["default"], {
           mdl: mdl
-        }, m(_index6["default"], {
+        }, m(_editor["default"], {
           mdl: mdl
         }));
       }
@@ -1985,7 +1832,7 @@ var routes = function routes(mdl) {
       render: function render() {
         return m(_index["default"], {
           mdl: mdl
-        }, m(_index3["default"], {
+        }, m(_article["default"], {
           mdl: mdl
         }));
       }
@@ -1998,7 +1845,7 @@ var routes = function routes(mdl) {
       render: function render() {
         return m(_index["default"], {
           mdl: mdl
-        }, m(_index4["default"], {
+        }, m(_profile["default"], {
           mdl: mdl,
           key: mdl.slug
         }));
@@ -2012,7 +1859,7 @@ var routes = function routes(mdl) {
       render: function render() {
         return m(_index["default"], {
           mdl: mdl
-        }, m(_index5["default"], {
+        }, m(_settings["default"], {
           mdl: mdl,
           key: mdl.slug
         }));

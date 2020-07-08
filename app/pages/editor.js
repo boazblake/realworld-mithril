@@ -1,5 +1,13 @@
 import Http from "Http"
-import { submitArticleTask, loadArticleTask } from "./model"
+import { compose, lensProp, over, split, trim, uniq } from "ramda"
+
+export const loadArticleTask = (http) => (mdl) => (slug) =>
+  http.getTask(mdl)(`articles/${slug}`)
+
+const formatTags = over(lensProp("tagList"), compose(uniq, split(" "), trim))
+
+export const submitArticleTask = (http) => (mdl) => (article) =>
+  http.postTask(mdl)("articles")({ article: formatTags(article) })
 
 const Editor = ({ attrs: { mdl } }) => {
   let data = {}
@@ -16,14 +24,12 @@ const Editor = ({ attrs: { mdl } }) => {
     }
 
     if (mdl.slug) {
-      console.log(mdl)
       loadArticleTask(Http)(mdl)(mdl.slug).fork(onError, onSuccess)
     }
   }
 
   const submitData = (data) => {
     const onSuccess = ({ article: { slug } }) => {
-      console.log(slug)
       m.route.set(`/article/${slug}`)
     }
 
@@ -80,8 +86,8 @@ const Editor = ({ attrs: { mdl } }) => {
                   m("input.form-control.form-control-lg", {
                     type: "text",
                     placeholder: "Enter tags",
-                    onchange: (e) => (data.tags = e.target.value),
-                    value: data.tags,
+                    onchange: (e) => (data.tagList = e.target.value),
+                    value: data.tagList,
                   })
                 ),
 

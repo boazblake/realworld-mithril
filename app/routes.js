@@ -1,11 +1,11 @@
 import Layout from "./layout/index"
-import Home from "./pages/home/index"
-import Article from "./pages/article/index"
-import Profile from "./pages/profile/index"
-import Register from "./pages/auth/register"
-import Login from "./pages/auth/login"
-import Settings from "./pages/settings/index"
-import Editor from "./pages/editor/index"
+import Home from "./pages/home"
+import Article from "./pages/article"
+import Profile from "./pages/profile"
+import Register from "./pages/register"
+import Login from "./pages/login"
+import Settings from "./pages/settings"
+import Editor from "./pages/editor"
 
 const routes = (mdl) => {
   return {
