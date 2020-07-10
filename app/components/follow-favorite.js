@@ -6,7 +6,7 @@ const favoriteArticleUrl = (slug) => `articles/${slug}/favorite`
 const followAuthorUrl = (author) => `profiles/${author}/follow`
 
 const deleteArticleTask = (http) => (mdl) =>
-  http.deleteTask(mdl)(favoriteArticleUrl(mdl.slug))
+  http.deleteTask(mdl)(deleteArticleUrl(mdl.slug))
 
 const favoriteArticleTask = (http) => (mdl) =>
   http.postTask(mdl)(favoriteArticleUrl(mdl.slug))()

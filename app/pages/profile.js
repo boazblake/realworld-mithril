@@ -1,5 +1,14 @@
 import Http from "Http"
+import { log } from "Utils"
 import { Banner, Loader, Articles, Paginator } from "components"
+
+const followAuthorUrl = (author) => `profiles/${author}/follow`
+
+const followAuthorTask = (http) => (mdl) => (author) =>
+  http.postTask(mdl)(followAuthorUrl(author))()
+
+const unFollowAuthorTask = (http) => (mdl) => (author) =>
+  http.deleteTask(mdl)(followAuthorUrl(author))
 
 const getProfileTask = (http) => (mdl) => (username) =>
   http.getTask(mdl)(`profiles/${username}`)
@@ -93,6 +102,15 @@ const Profile = ({ attrs: { mdl } }) => {
     loadData(mdl)
   }
 
+  const toggleAuthorFollow = ({ author: { username, following } }) => {
+    const onError = log("toggleAuthorFollow, err-auth")
+    const onSuccess = ({ profile: { following } }) =>
+      (data.profile.following = following)
+
+    let toggleTask = following ? unFollowAuthorTask : followAuthorTask
+    toggleTask(Http)(mdl)(username).fork(onError, onSuccess)
+  }
+
   return {
     oninit: ({ attrs: { mdl } }) => loadInitData(mdl),
     view: ({ attrs: { mdl } }) => {
@@ -115,24 +133,37 @@ const Profile = ({ attrs: { mdl } }) => {
                   m("h4", data.profile.username),
                   m("p", data.profile.bio),
                   data.profile.username !== mdl.user.username
-                    ? m("button.btn.btn-sm.btn-outline-secondary.action-btn", [
-                        m("i.ion-plus-round"),
-                        " ",
-                        m.trust("&nbsp;"),
-                        `Follow ${data.profile.username}`,
-                      ])
+                    ? m(
+                        "button.btn.btn-sm.btn-outline-secondary.action-btn",
+                        {
+                          onclick: (e) => {
+                            toggleAuthorFollow({
+                              author: {
+                                username: data.profile.username,
+                                following: data.profile.following,
+                              },
+                            })
+                          },
+                        },
+                        [
+                          data.profile.following
+                            ? [
+                                m("i.ion-minus-round"),
+                                ` Unfollow ${data.profile.username} `,
+                              ]
+                            : [
+                                m("i.ion-plus-round"),
+                                ` Follow ${data.profile.username} `,
+                              ],
+                        ]
+                      )
                     : m(
                         "button.btn.btn-sm.btn-outline-secondary.action-btn",
                         {
                           onclick: (e) =>
                             m.route.set(`/settings/${data.profile.username}`),
                         },
-                        [
-                          m("i.ion-gear-a"),
-                          " ",
-                          m.trust("&nbsp;"),
-                          `Edit Profile Settings`,
-                        ]
+                        [m("i.ion-gear-a.p-5"), `Edit Profile Settings`]
                       ),
                 ])
               )
