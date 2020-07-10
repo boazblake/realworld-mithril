@@ -47,9 +47,9 @@ export const FeedNav = ({ attrs: { fetchData } }) => {
                       fetchData(mdl)
                     },
                   },
-                  tag
+                  `# ${tag}`
                 ),
-                m("i.ion-close-circled", {
+                m("i.ion-close-circled.p-5", {
                   onclick: (e) =>
                     (data.tags.selected = without(tag, data.tags.selected)),
                 }),
