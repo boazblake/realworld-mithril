@@ -1,4 +1,3 @@
-import { isEmpty } from "ramda"
 import Http from "Http"
 import {
   Banner,
@@ -75,7 +74,7 @@ const Home = () => {
     oninit: ({ attrs: { mdl } }) => loadInitData(mdl),
     view: ({ attrs: { mdl } }) => {
       return m(".home-page", [
-        isEmpty(mdl.user) &&
+        !mdl.state.isLoggedIn() &&
           m(Banner, [
             m("h1.logo-font", "conduit"),
             m("p", "A place to share your knowledge."),
@@ -96,18 +95,22 @@ const Home = () => {
 
                 state.feedStatus == "loading" && m("p", "Loading Articles ..."),
 
-                state.feedStatus == "success" && [
-                  m(Articles, { mdl, data }),
+                state.feedStatus == "success"
+                  ? state.total
+                    ? [
+                        m(Articles, { mdl, data }),
 
-                  m(Paginator, {
-                    mdl,
-                    state,
-                    fetchDataFor: (offset) => {
-                      state.offset = offset * state.limit
-                      loadArticles(mdl)
-                    },
-                  }),
-                ],
+                        m(Paginator, {
+                          mdl,
+                          state,
+                          fetchDataFor: (offset) => {
+                            state.offset = offset
+                            loadArticles(mdl)
+                          },
+                        }),
+                      ]
+                    : m("p.pull-xs-left", "No articles are here... yet.")
+                  : "",
               ]),
 
               m(".col-md-3", m(SideBar, { mdl, data })),

@@ -1,4 +1,4 @@
-import { isEmpty, without } from "ramda"
+import { without } from "ramda"
 
 export const FeedNav = ({ attrs: { fetchData } }) => {
   return {
@@ -6,11 +6,11 @@ export const FeedNav = ({ attrs: { fetchData } }) => {
       return m(
         ".feed-toggle",
         m("ul.nav nav-pills outline-active", [
-          !isEmpty(mdl.user) &&
+          mdl.state.isLoggedIn() &&
             m(
               "li.nav-item",
               m(
-                `.nav-link ${data.tags.current == "feed" && "active"}`,
+                `a.nav-link ${data.tags.current == "feed" && "active"}`,
                 {
                   onclick: (e) => {
                     data.tags.current = "feed"
@@ -24,7 +24,7 @@ export const FeedNav = ({ attrs: { fetchData } }) => {
           m(
             "li.nav-item",
             m(
-              `.nav-link ${data.tags.current == "" && "active"}`,
+              `a.nav-link ${data.tags.current == "" && "active"}`,
               {
                 onclick: (e) => {
                   data.tags.current = ""
@@ -38,7 +38,7 @@ export const FeedNav = ({ attrs: { fetchData } }) => {
           data.tags.selected.map((tag) =>
             m(
               "li.nav-item",
-              m(`.nav-link ${data.tags.current == tag && "active"}`, [
+              m(`a.nav-link ${data.tags.current == tag && "active"}`, [
                 m(
                   "span",
                   {

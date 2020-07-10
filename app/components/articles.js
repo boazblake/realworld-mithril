@@ -1,24 +1,34 @@
-const ArticlePreview = () => {
+import Http from "Http"
+import { log } from "Utils"
+
+const favoriteArticleUrl = (slug) => `articles/${slug}/favorite`
+const favoriteArticleTask = (http) => (mdl) => (slug) =>
+  http.postTask(mdl)(favoriteArticleUrl(slug))()
+
+const unFavoriteArticleTask = (http) => (mdl) => (slug) =>
+  http.deleteTask(mdl)(favoriteArticleUrl(slug))
+
+const ArticlePreview = ({ attrs: { mdl, article } }) => {
+  let data = article
+  const toggleArticleLike = (favorited, slug) => {
+    const onError = log("toggleArticleLike err-art")
+    const onSuccess = ({ article: { favorited, favoritesCount } }) => {
+      data.favorited = favorited
+      data.favoritesCount = favoritesCount
+    }
+
+    let toggle = favorited ? unFavoriteArticleTask : favoriteArticleTask
+    toggle(Http)(mdl)(slug).fork(onError, onSuccess)
+  }
+
   return {
-    view: ({
-      attrs: {
-        article: {
-          author: { image, username },
-          createdAt,
-          favoritesCount,
-          title,
-          description,
-          tagList,
-          slug,
-        },
-      },
-    }) => {
+    view: () => {
       return m(".article-preview", [
         m(".article-meta", [
           m(
             m.route.Link,
-            { href: `/profile/${username}`, options: { replace: true } },
-            m("img", { src: image })
+            { href: `/profile/${data.username}`, options: { replace: true } },
+            m("img", { src: data.image })
           ),
 
           m(".info", [
@@ -26,28 +36,37 @@ const ArticlePreview = () => {
               m.route.Link,
               {
                 class: "author",
-                href: `/profile/${username}`,
+                href: `/profile/${data.username}`,
                 options: { replace: true },
               },
-              username
+              data.username
             ),
-            m("span.date", createdAt),
+            m("span.date", data.createdAt),
           ]),
           m(
             "button.btn btn-outline-primary btn-sm pull-xs-right",
-
-            [m("i.ion-heart"), m("span", favoritesCount)]
+            {
+              onclick: (e) => toggleArticleLike(data.favorited, data.slug),
+              class: data.favorited && "active",
+            },
+            [m("i.ion-heart.p-5"), m("span", data.favoritesCount)]
           ),
         ]),
-        m(m.route.Link, { class: "preview-link", href: `/article/${slug}` }, [
-          m("h1", title),
-          m("p", description),
-          m(
-            "ul.tag-list",
-            tagList.map((tag) => m("li.tag-default tag-pill tag-outline", tag))
-          ),
-          m("span", "Read more..."),
-        ]),
+        m(
+          m.route.Link,
+          { class: "preview-link", href: `/article/${data.slug}` },
+          [
+            m("h1", data.title),
+            m("p", data.description),
+            m(
+              "ul.tag-list",
+              data.tagList.map((tag) =>
+                m("li.tag-default tag-pill tag-outline", tag)
+              )
+            ),
+            m("span", "Read more..."),
+          ]
+        ),
       ])
     },
   }
@@ -55,11 +74,12 @@ const ArticlePreview = () => {
 
 export const Articles = () => {
   return {
-    view: ({ attrs: { mdl, data } }) =>
-      data.articles
+    view: ({ attrs: { mdl, data } }) => {
+      return data.articles.length
         ? data.articles.map((article) =>
             m(ArticlePreview, { mdl, data, article })
           )
-        : m("p", "No articles are here... yet."),
+        : m("p", "No articles are here... yet.")
+    },
   }
 }

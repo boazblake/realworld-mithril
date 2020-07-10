@@ -72,6 +72,8 @@ const Http = {
   deleteTask: (mdl) => (url) => call(getUserToken())("DELETE")(mdl)(url)(null),
   postTask: (mdl) => (url) => (data) =>
     call(getUserToken())("POST")(mdl)(url)(data),
+  putTask: (mdl) => (url) => (data) =>
+    call(getUserToken())("PUT")(mdl)(url)(data),
 }
 
 export default Http

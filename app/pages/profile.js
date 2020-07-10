@@ -1,70 +1,109 @@
 import Http from "Http"
-import { Banner, Loader, Articles } from "components"
+import { Banner, Loader, Articles, Paginator } from "components"
 
 const getProfileTask = (http) => (mdl) => (username) =>
   http.getTask(mdl)(`profiles/${username}`)
 
 const getAuthorArticlesTask = (http) => (mdl) => (state) => (username) =>
   http.getTask(mdl)(
-    `articles?limit=20&offset=${state.offset}&author=${username}`
+    `articles?limit=${state.limit}&offset=${state.offset}&author=${username}`
   )
 
 const getAuthorFavoriteArticlesTask = (http) => (mdl) => (state) => (
   username
 ) =>
   http.getTask(mdl)(
-    `articles?limit=20&offset=${state.offset}&favorited=${username}`
+    `articles?limit=${state.limit}&offset=${state.offset}&favorited=${username}`
   )
 
 export const loadDataTask = (http) => (mdl) => (state) =>
-  Task.of((profile) => (authorArticles) => (authorFavoriteArticles) => ({
+  state.showFaveArticles
+    ? getAuthorFavoriteArticlesTask(http)(mdl)(state)(mdl.slug)
+    : getAuthorArticlesTask(http)(mdl)(state)(mdl.slug)
+
+export const loadInitDataTask = (http) => (mdl) => (state) =>
+  Task.of((profile) => (authorArticles) => ({
     ...profile,
     authorArticles,
-    authorFavoriteArticles,
   }))
     .ap(getProfileTask(http)(mdl)(mdl.slug))
     .ap(getAuthorArticlesTask(http)(mdl)(state)(mdl.slug))
-    .ap(getAuthorFavoriteArticlesTask(http)(mdl)(state)(mdl.slug))
 
-const Profile = () => {
-  const data = {}
+const Profile = ({ attrs: { mdl } }) => {
+  const data = {
+    authorArticles: { articles: [], articlesCount: 0 },
+    authorFavoriteArticles: { articles: [], articlesCount: 0 },
+  }
+
   const state = {
-    status: "loading",
+    pageStatus: "loading",
+    feedStatus: "loading",
     showFaveArticles: false,
-    limit: 20,
+    limit: 5,
     offset: 0,
     total: 0,
     error: null,
   }
 
-  const onSuccess = ({ authorArticles, authorFavoriteArticles, profile }) => {
-    data.authorArticles = authorArticles
-    data.authorFavoriteArticles = authorFavoriteArticles
-    data.profile = profile
-    state.status = "success"
-  }
-
-  const onError = (error) => {
-    console.log("error", error)
-    state.error = error
-    state.status = "error"
-  }
-
   const loadData = (mdl) => {
-    state.status = "loading"
+    const onSuccess = (result) => {
+      state.showFaveArticles
+        ? (data.authorFavoriteArticles = result)
+        : (data.authorArticles = result)
+
+      state.total = state.showFaveArticles
+        ? data.authorFavoriteArticles.articlesCount
+        : data.authorArticles.articlesCount
+      state.feedStatus = "success"
+    }
+
+    const onError = (error) => {
+      console.log("error", error)
+      state.error = error
+      state.feedStatus = "error"
+    }
+
+    state.feedStatus = "loading"
     loadDataTask(Http)(mdl)(state).fork(onError, onSuccess)
   }
+
+  const loadInitData = (mdl) => {
+    const onSuccess = ({ authorArticles, profile }) => {
+      data.authorArticles = authorArticles
+      data.profile = profile
+      state.pageStatus = "success"
+      state.feedStatus = "success"
+      state.total = data.authorArticles.articlesCount
+    }
+
+    const onError = (error) => {
+      console.log("error", error)
+      state.error = error
+      state.pageStatus = "error"
+      m.route.set("/home")
+    }
+
+    state.pageStatus = "loading"
+    loadInitDataTask(Http)(mdl)(state).fork(onError, onSuccess)
+  }
+
+  const selectFeed = (toShowFaveArticles) => {
+    state.showFaveArticles = toShowFaveArticles
+    state.offset = 0
+    loadData(mdl)
+  }
+
   return {
-    oninit: ({ attrs: { mdl } }) => loadData(mdl),
-    view: ({ attrs: { mdl } }) =>
-      m(
+    oninit: ({ attrs: { mdl } }) => loadInitData(mdl),
+    view: ({ attrs: { mdl } }) => {
+      return m(
         ".profile-page",
 
-        state.status == "loading" &&
+        state.pageStatus == "loading" &&
           m(Loader, [m("h1.logo-font", "Loading ...")]),
-        state.status == "error" &&
+        state.pageStatus == "error" &&
           m(Banner, [m("h1.logo-font", `Error Loading Data: ${state.error}`)]),
-        state.status == "success" && [
+        state.pageStatus == "success" && [
           m(
             ".user-info",
             m(
@@ -110,9 +149,9 @@ const Profile = () => {
                     m(
                       "li.nav-item",
                       m(
-                        `.nav-link ${!state.showFaveArticles && "active"}`,
+                        `a.nav-link ${!state.showFaveArticles && "active"}`,
                         {
-                          onclick: (e) => (state.showFaveArticles = false),
+                          onclick: (e) => selectFeed(false),
                         },
                         "My Articles"
                       )
@@ -120,23 +159,40 @@ const Profile = () => {
                     m(
                       "li.nav-item",
                       m(
-                        `.nav-link ${state.showFaveArticles && "active"}`,
+                        `a.nav-link ${state.showFaveArticles && "active"}`,
                         {
-                          onclick: (e) => (state.showFaveArticles = true),
+                          onclick: (e) => selectFeed(true),
                         },
                         "Favorited Articles"
                       )
                     ),
                   ])
                 ),
-                state.showFaveArticles
-                  ? m(Articles, { mdl, data: data.authorFavoriteArticles })
-                  : m(Articles, { mdl, data: data.authorArticles }),
+                state.feedStatus == "loading" && "Loading Articles...",
+                state.feedStatus == "error" &&
+                  m(Banner, [
+                    m("h1.logo-font", `Error Loading Data: ${state.error}`),
+                  ]),
+                (state.feedStatus = "sucess" && [
+                  state.showFaveArticles
+                    ? m(Articles, { mdl, data: data.authorFavoriteArticles })
+                    : m(Articles, { mdl, data: data.authorArticles }),
+
+                  m(Paginator, {
+                    mdl,
+                    state,
+                    fetchDataFor: (offset) => {
+                      state.offset = offset
+                      loadData(mdl)
+                    },
+                  }),
+                ]),
               ])
             )
           ),
         ]
-      ),
+      )
+    },
   }
 }
 

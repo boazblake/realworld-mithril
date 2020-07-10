@@ -4,7 +4,7 @@ import Article from "./pages/article"
 import Profile from "./pages/profile"
 import Register from "./pages/register"
 import Login from "./pages/login"
-import Settings from "./pages/settings"
+import User from "./pages/user"
 import Editor from "./pages/editor"
 
 const routes = (mdl) => {
@@ -48,7 +48,7 @@ const routes = (mdl) => {
       onmatch: ({ slug }) => {
         mdl.slug = slug
       },
-      render: () => m(Layout, { mdl }, m(Settings, { mdl, key: mdl.slug })),
+      render: () => m(Layout, { mdl }, m(User, { mdl, key: mdl.slug })),
     },
 
     "/login": {

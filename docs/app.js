@@ -274,6 +274,13 @@ var Http = {
         return call(getUserToken())("POST")(mdl)(url)(data);
       };
     };
+  },
+  putTask: function putTask(mdl) {
+    return function (url) {
+      return function (data) {
+        return call(getUserToken())("PUT")(mdl)(url)(data);
+      };
+    };
   }
 };
 var _default = Http;
@@ -306,36 +313,77 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Articles = void 0;
 
-var ArticlePreview = function ArticlePreview() {
+var _Http = _interopRequireDefault(require("Http"));
+
+var _Utils = require("Utils");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var favoriteArticleUrl = function favoriteArticleUrl(slug) {
+  return "articles/".concat(slug, "/favorite");
+};
+
+var favoriteArticleTask = function favoriteArticleTask(http) {
+  return function (mdl) {
+    return function (slug) {
+      return http.postTask(mdl)(favoriteArticleUrl(slug))();
+    };
+  };
+};
+
+var unFavoriteArticleTask = function unFavoriteArticleTask(http) {
+  return function (mdl) {
+    return function (slug) {
+      return http.deleteTask(mdl)(favoriteArticleUrl(slug));
+    };
+  };
+};
+
+var ArticlePreview = function ArticlePreview(_ref) {
+  var _ref$attrs = _ref.attrs,
+      mdl = _ref$attrs.mdl,
+      article = _ref$attrs.article;
+  var data = article;
+
+  var toggleArticleLike = function toggleArticleLike(favorited, slug) {
+    var onError = (0, _Utils.log)("toggleArticleLike err-art");
+
+    var onSuccess = function onSuccess(_ref2) {
+      var _ref2$article = _ref2.article,
+          favorited = _ref2$article.favorited,
+          favoritesCount = _ref2$article.favoritesCount;
+      data.favorited = favorited;
+      data.favoritesCount = favoritesCount;
+    };
+
+    var toggle = favorited ? unFavoriteArticleTask : favoriteArticleTask;
+    toggle(_Http["default"])(mdl)(slug).fork(onError, onSuccess);
+  };
+
   return {
-    view: function view(_ref) {
-      var _ref$attrs$article = _ref.attrs.article,
-          _ref$attrs$article$au = _ref$attrs$article.author,
-          image = _ref$attrs$article$au.image,
-          username = _ref$attrs$article$au.username,
-          createdAt = _ref$attrs$article.createdAt,
-          favoritesCount = _ref$attrs$article.favoritesCount,
-          title = _ref$attrs$article.title,
-          description = _ref$attrs$article.description,
-          tagList = _ref$attrs$article.tagList,
-          slug = _ref$attrs$article.slug;
+    view: function view() {
       return m(".article-preview", [m(".article-meta", [m(m.route.Link, {
-        href: "/profile/".concat(username),
+        href: "/profile/".concat(data.username),
         options: {
           replace: true
         }
       }, m("img", {
-        src: image
+        src: data.image
       })), m(".info", [m(m.route.Link, {
         "class": "author",
-        href: "/profile/".concat(username),
+        href: "/profile/".concat(data.username),
         options: {
           replace: true
         }
-      }, username), m("span.date", createdAt)]), m("button.btn btn-outline-primary btn-sm pull-xs-right", [m("i.ion-heart"), m("span", favoritesCount)])]), m(m.route.Link, {
+      }, data.username), m("span.date", data.createdAt)]), m("button.btn btn-outline-primary btn-sm pull-xs-right", {
+        onclick: function onclick(e) {
+          return toggleArticleLike(data.favorited, data.slug);
+        },
+        "class": data.favorited && "active"
+      }, [m("i.ion-heart.p-5"), m("span", data.favoritesCount)])]), m(m.route.Link, {
         "class": "preview-link",
-        href: "/article/".concat(slug)
-      }, [m("h1", title), m("p", description), m("ul.tag-list", tagList.map(function (tag) {
+        href: "/article/".concat(data.slug)
+      }, [m("h1", data.title), m("p", data.description), m("ul.tag-list", data.tagList.map(function (tag) {
         return m("li.tag-default tag-pill tag-outline", tag);
       })), m("span", "Read more...")])]);
     }
@@ -344,11 +392,11 @@ var ArticlePreview = function ArticlePreview() {
 
 var Articles = function Articles() {
   return {
-    view: function view(_ref2) {
-      var _ref2$attrs = _ref2.attrs,
-          mdl = _ref2$attrs.mdl,
-          data = _ref2$attrs.data;
-      return data.articles ? data.articles.map(function (article) {
+    view: function view(_ref3) {
+      var _ref3$attrs = _ref3.attrs,
+          mdl = _ref3$attrs.mdl,
+          data = _ref3$attrs.data;
+      return data.articles.length ? data.articles.map(function (article) {
         return m(ArticlePreview, {
           mdl: mdl,
           data: data,
@@ -421,7 +469,6 @@ var trimBody = (0, _ramda.over)((0, _ramda.lensProp)("body"), _ramda.trim);
 var submitTask = function submitTask(http) {
   return function (mdl) {
     return function (comment) {
-      console.log("comment", comment);
       return http.postTask(mdl)("articles/".concat(mdl.slug, "/comments"))({
         comment: comment
       });
@@ -572,18 +619,18 @@ var FeedNav = function FeedNav(_ref) {
       var _ref2$attrs = _ref2.attrs,
           mdl = _ref2$attrs.mdl,
           data = _ref2$attrs.data;
-      return m(".feed-toggle", m("ul.nav nav-pills outline-active", [!(0, _ramda.isEmpty)(mdl.user) && m("li.nav-item", m(".nav-link ".concat(data.tags.current == "feed" && "active"), {
+      return m(".feed-toggle", m("ul.nav nav-pills outline-active", [mdl.state.isLoggedIn() && m("li.nav-item", m("a.nav-link ".concat(data.tags.current == "feed" && "active"), {
         onclick: function onclick(e) {
           data.tags.current = "feed";
           fetchData(mdl);
         }
-      }, "Your Feed")), m("li.nav-item", m(".nav-link ".concat(data.tags.current == "" && "active"), {
+      }, "Your Feed")), m("li.nav-item", m("a.nav-link ".concat(data.tags.current == "" && "active"), {
         onclick: function onclick(e) {
           data.tags.current = "";
           fetchData(mdl);
         }
       }, "Global Feed")), data.tags.selected.map(function (tag) {
-        return m("li.nav-item", m(".nav-link ".concat(data.tags.current == tag && "active"), [m("span", {
+        return m("li.nav-item", m("a.nav-link ".concat(data.tags.current == tag && "active"), [m("span", {
           onclick: function onclick(e) {
             data.tags.current = tag;
             fetchData(mdl);
@@ -609,29 +656,142 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.FollowFavorite = void 0;
 
-var FollowFavorite = function FollowFavorite() {
+var _Http = _interopRequireDefault(require("Http"));
+
+var _Utils = require("Utils");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var deleteArticleUrl = function deleteArticleUrl(slug) {
+  return "articles/".concat(slug);
+};
+
+var favoriteArticleUrl = function favoriteArticleUrl(slug) {
+  return "articles/".concat(slug, "/favorite");
+};
+
+var followAuthorUrl = function followAuthorUrl(author) {
+  return "profiles/".concat(author, "/follow");
+};
+
+var deleteArticleTask = function deleteArticleTask(http) {
+  return function (mdl) {
+    return http.deleteTask(mdl)(favoriteArticleUrl(mdl.slug));
+  };
+};
+
+var favoriteArticleTask = function favoriteArticleTask(http) {
+  return function (mdl) {
+    return http.postTask(mdl)(favoriteArticleUrl(mdl.slug))();
+  };
+};
+
+var unFavoriteArticleTask = function unFavoriteArticleTask(http) {
+  return function (mdl) {
+    return http.deleteTask(mdl)(favoriteArticleUrl(mdl.slug));
+  };
+};
+
+var followAuthorTask = function followAuthorTask(http) {
+  return function (mdl) {
+    return function (author) {
+      return http.postTask(mdl)(followAuthorUrl(author))();
+    };
+  };
+};
+
+var unFollowAuthorTask = function unFollowAuthorTask(http) {
+  return function (mdl) {
+    return function (author) {
+      return http.deleteTask(mdl)(followAuthorUrl(author));
+    };
+  };
+};
+
+var FollowFavorite = function FollowFavorite(_ref) {
+  var _ref$attrs = _ref.attrs,
+      mdl = _ref$attrs.mdl,
+      data = _ref$attrs.data;
+
+  var toggleArticleLike = function toggleArticleLike(_ref2) {
+    var favorited = _ref2.favorited;
+    var onError = (0, _Utils.log)("toggleArticleLike err-art");
+
+    var onSuccess = function onSuccess(_ref3) {
+      var _ref3$article = _ref3.article,
+          favorited = _ref3$article.favorited,
+          favoritesCount = _ref3$article.favoritesCount;
+      data.favorited = favorited;
+      data.favoritesCount = favoritesCount;
+    };
+
+    var toggle = favorited ? unFavoriteArticleTask : favoriteArticleTask;
+    toggle(_Http["default"])(mdl).fork(onError, onSuccess);
+  };
+
+  var toggleAuthorFollow = function toggleAuthorFollow(_ref4) {
+    var _ref4$author = _ref4.author,
+        username = _ref4$author.username,
+        following = _ref4$author.following;
+    var onError = (0, _Utils.log)("toggleAuthorFollow, err-auth");
+
+    var onSuccess = function onSuccess(_ref5) {
+      var following = _ref5.profile.following;
+      return data.author.following = following;
+    };
+
+    var toggle = following ? unFollowAuthorTask : followAuthorTask;
+    toggle(_Http["default"])(mdl)(username).fork(onError, onSuccess);
+  };
+
+  var deleteArticle = function deleteArticle(slug) {
+    var onError = (0, _Utils.log)("deleteArticle, err-auth");
+
+    var onSuccess = function onSuccess(s) {
+      console.log(s);
+      m.route.set("/home");
+    };
+
+    deleteArticleTask(_Http["default"])(mdl).fork(onError, onSuccess);
+  };
+
   return {
-    view: function view(_ref) {
-      var _ref$attrs = _ref.attrs,
-          mdl = _ref$attrs.mdl,
-          _ref$attrs$data = _ref$attrs.data,
-          _ref$attrs$data$autho = _ref$attrs$data.author,
-          username = _ref$attrs$data$autho.username,
-          image = _ref$attrs$data$autho.image,
-          createdAt = _ref$attrs$data.createdAt,
-          slug = _ref$attrs$data.slug;
-      return m(".article-actions", m(".article-meta", [m(m.route.Link, {
+    view: function view(_ref6) {
+      var _ref6$attrs = _ref6.attrs,
+          mdl = _ref6$attrs.mdl,
+          _ref6$attrs$data = _ref6$attrs.data,
+          _ref6$attrs$data$auth = _ref6$attrs$data.author,
+          username = _ref6$attrs$data$auth.username,
+          image = _ref6$attrs$data$auth.image,
+          following = _ref6$attrs$data$auth.following,
+          favoritesCount = _ref6$attrs$data.favoritesCount,
+          favorited = _ref6$attrs$data.favorited,
+          createdAt = _ref6$attrs$data.createdAt,
+          slug = _ref6$attrs$data.slug;
+      return m(".article-meta", [m(m.route.Link, {
         href: "profile/".concat(username)
       }, m("img", {
         src: image
       })), m(".info", [m(m.route.Link, {
         "class": "author",
         href: "profile/".concat(username)
-      }, username), m("span.date", createdAt)]), mdl.user.username == username ? m(m.route.Link, {
+      }, username), m("span.date", createdAt)]), mdl.user.username == username ? [m(m.route.Link, {
         "class": "btn btn-sm btn-outline-secondary",
         href: "/editor/".concat(slug),
         selector: "button"
-      }, [m("i.ion-edit"), "Edit Article"]) : m("button.btn.btn-sm.btn-outline-secondary", [m("i.ion-plus-round"), " ", m.trust("&nbsp;"), " Follow ".concat(username, " "), m("span.counter", "(10)")]), " ", m.trust("&nbsp;"), m.trust("&nbsp;"), " ", m("button.btn.btn-sm.btn-outline-primary", [m("i.ion-heart"), " ", m.trust("&nbsp;"), " Favorite Post ", m("span.counter", "(29)")])]));
+      }, [m("i.ion-edit.p-5"), "Edit Article"]), m("button.btn.btn-sm.btn-outline-danger.m-5", {
+        onclick: function onclick(e) {
+          return deleteArticle(slug);
+        }
+      }, [m("i.ion-trash-a.m-5"), "Delete Article "])] : [m("button.btn.btn-sm.btn-outline-secondary", {
+        onclick: function onclick(e) {
+          return toggleAuthorFollow(data);
+        }
+      }, [following ? [m("i.ion-minus-round"), " Unfollow ".concat(username, " ")] : [m("i.ion-plus-round"), " Follow ".concat(username, " ")]]), m("button.btn.btn-sm.btn-outline-primary.m-5", {
+        onclick: function onclick(e) {
+          return toggleArticleLike(data);
+        }
+      }, [m("i.ion-heart.m-5"), favorited ? " Unfavorite Article " : " Favorite Article ", m("span.counter", "( ".concat(favoritesCount, " )"))])]]);
     }
   };
 };
@@ -785,15 +945,15 @@ var Paginator = function Paginator() {
       var _ref$attrs = _ref.attrs,
           state = _ref$attrs.state,
           fetchDataFor = _ref$attrs.fetchDataFor;
-      var total = state.total / state.limit;
-      var current = state.offset / state.limit;
+      var total = Math.ceil(state.total / state.limit) + 1;
+      var current = state.offset / state.limit + 1;
 
       var range = _toConsumableArray(Array(total).keys()).slice(1);
 
-      return m("ul.pagination", range.map(function (page) {
+      return state.total > state.limit && m("ul.pagination", range.map(function (page, idx) {
         return m("li.page-item ".concat(page == current && "active"), m(".page-link active", {
           onclick: function onclick(e) {
-            return fetchDataFor(page);
+            return fetchDataFor(idx * state.limit);
           }
         }, page));
       }));
@@ -941,30 +1101,28 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _ramda = require("ramda");
-
 var Header = function Header() {
   return {
     view: function view(_ref) {
       var mdl = _ref.attrs.mdl;
       return m("nav.navbar navbar-light", m(".container", m("a.navbar-brand", {
         href: "#"
-      }, "conduit"), m("ul.nav navbar-nav pull-xs-right", (0, _ramda.isEmpty)(mdl.user) ? [m("li.nav-item", m(m.route.Link, {
+      }, "conduit"), m("ul.nav navbar-nav pull-xs-right", mdl.state.isLoggedIn() ? [m("li.nav-item", m(m.route.Link, {
+        "class": "nav-link",
+        href: "/editor"
+      }, [m("i.ion-compose.p-5"), "New Article"])), m("li.nav-item", m(m.route.Link, {
+        "class": "nav-link",
+        href: "/settings/".concat(mdl.user.username)
+      }, [m("i.ion-gear-a.p-5"), "Settings"])), m("li.nav-item", m(m.route.Link, {
+        "class": "nav-link",
+        href: "/profile/".concat(mdl.user.username)
+      }, mdl.user.username))] : [m("li.nav-item", m(m.route.Link, {
         "class": "nav-link",
         href: "/register"
       }, "Sign up")), m("li.nav-item", m(m.route.Link, {
         "class": "nav-link",
         href: "/login"
-      }, "Login"))] : [m("li.nav-item", m(m.route.Link, {
-        "class": "nav-link",
-        href: "/editor"
-      }, "New Article")), m("li.nav-item", m(m.route.Link, {
-        "class": "nav-link",
-        href: "/settings/".concat(mdl.user.username)
-      }, "Settings")), m("li.nav-item", m(m.route.Link, {
-        "class": "nav-link",
-        href: "/profile/".concat(mdl.user.username)
-      }, mdl.user.username))])));
+      }, "Login"))])));
     }
   };
 };
@@ -1018,6 +1176,9 @@ var model = {
     loadingProgress: {
       max: 0,
       value: 0
+    },
+    isLoggedIn: function isLoggedIn() {
+      return sessionStorage.getItem("token");
     }
   },
   settings: {},
@@ -1088,10 +1249,10 @@ var Article = function Article() {
       return m(".article-page", [state.status == "loading" && m(_components.Banner, [m("h1.logo-font", "Loading ...")]), state.status == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.status == "success" && [m(".banner", m(".container", [m("h1", data.article.title), m(_components.FollowFavorite, {
         mdl: mdl,
         data: data.article
-      })])), m(".container.page", [m(".row.article-content", m(".col-md-12.text-justify", m.trust((0, _marked["default"])(data.article.body)))), m("hr"), m(_components.FollowFavorite, {
+      })])), m(".container.page", [m(".row.article-content", m(".col-md-12.text-justify", m.trust((0, _marked["default"])(data.article.body)))), m("hr"), m(".article-actions", [m(_components.FollowFavorite, {
         mdl: mdl,
         data: data.article
-      }), m(_components.Comments, {
+      })]), m(_components.Comments, {
         mdl: mdl,
         comments: data.comments,
         reloadArticle: function reloadArticle() {
@@ -1232,8 +1393,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _ramda = require("ramda");
-
 var _Http = _interopRequireDefault(require("Http"));
 
 var _components = require("components");
@@ -1342,21 +1501,21 @@ var Home = function Home() {
     },
     view: function view(_ref4) {
       var mdl = _ref4.attrs.mdl;
-      return m(".home-page", [(0, _ramda.isEmpty)(mdl.user) && m(_components.Banner, [m("h1.logo-font", "conduit"), m("p", "A place to share your knowledge.")]), state.pageStatus == "loading" && m(_components.Loader, [m("h1.logo-font", "Loading Data")]), state.pageStatus == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.pageStatus == "success" && m(".container page", m(".row", [m(".col-md-9", [m(_components.FeedNav, {
+      return m(".home-page", [!mdl.state.isLoggedIn() && m(_components.Banner, [m("h1.logo-font", "conduit"), m("p", "A place to share your knowledge.")]), state.pageStatus == "loading" && m(_components.Loader, [m("h1.logo-font", "Loading Data")]), state.pageStatus == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.pageStatus == "success" && m(".container page", m(".row", [m(".col-md-9", [m(_components.FeedNav, {
         fetchData: loadArticles,
         mdl: mdl,
         data: data
-      }), state.feedStatus == "loading" && m("p", "Loading Articles ..."), state.feedStatus == "success" && [m(_components.Articles, {
+      }), state.feedStatus == "loading" && m("p", "Loading Articles ..."), state.feedStatus == "success" ? state.total ? [m(_components.Articles, {
         mdl: mdl,
         data: data
       }), m(_components.Paginator, {
         mdl: mdl,
         state: state,
         fetchDataFor: function fetchDataFor(offset) {
-          state.offset = offset * state.limit;
+          state.offset = offset;
           loadArticles(mdl);
         }
-      })]]), m(".col-md-3", m(_components.SideBar, {
+      })] : m("p.pull-xs-left", "No articles are here... yet.") : ""]), m(".col-md-3", m(_components.SideBar, {
         mdl: mdl,
         data: data
       }))]))]);
@@ -1463,7 +1622,7 @@ exports["default"] = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = exports.loadDataTask = void 0;
+exports["default"] = exports.loadInitDataTask = exports.loadDataTask = void 0;
 
 var _Http = _interopRequireDefault(require("Http"));
 
@@ -1489,7 +1648,7 @@ var getAuthorArticlesTask = function getAuthorArticlesTask(http) {
   return function (mdl) {
     return function (state) {
       return function (username) {
-        return http.getTask(mdl)("articles?limit=20&offset=".concat(state.offset, "&author=").concat(username));
+        return http.getTask(mdl)("articles?limit=".concat(state.limit, "&offset=").concat(state.offset, "&author=").concat(username));
       };
     };
   };
@@ -1499,7 +1658,7 @@ var getAuthorFavoriteArticlesTask = function getAuthorFavoriteArticlesTask(http)
   return function (mdl) {
     return function (state) {
       return function (username) {
-        return http.getTask(mdl)("articles?limit=20&offset=".concat(state.offset, "&favorited=").concat(username));
+        return http.getTask(mdl)("articles?limit=".concat(state.limit, "&offset=").concat(state.offset, "&favorited=").concat(username));
       };
     };
   };
@@ -1508,82 +1667,131 @@ var getAuthorFavoriteArticlesTask = function getAuthorFavoriteArticlesTask(http)
 var loadDataTask = function loadDataTask(http) {
   return function (mdl) {
     return function (state) {
-      return Task.of(function (profile) {
-        return function (authorArticles) {
-          return function (authorFavoriteArticles) {
-            return _objectSpread({}, profile, {
-              authorArticles: authorArticles,
-              authorFavoriteArticles: authorFavoriteArticles
-            });
-          };
-        };
-      }).ap(getProfileTask(http)(mdl)(mdl.slug)).ap(getAuthorArticlesTask(http)(mdl)(state)(mdl.slug)).ap(getAuthorFavoriteArticlesTask(http)(mdl)(state)(mdl.slug));
+      return state.showFaveArticles ? getAuthorFavoriteArticlesTask(http)(mdl)(state)(mdl.slug) : getAuthorArticlesTask(http)(mdl)(state)(mdl.slug);
     };
   };
 };
 
 exports.loadDataTask = loadDataTask;
 
-var Profile = function Profile() {
-  var data = {};
+var loadInitDataTask = function loadInitDataTask(http) {
+  return function (mdl) {
+    return function (state) {
+      return Task.of(function (profile) {
+        return function (authorArticles) {
+          return _objectSpread({}, profile, {
+            authorArticles: authorArticles
+          });
+        };
+      }).ap(getProfileTask(http)(mdl)(mdl.slug)).ap(getAuthorArticlesTask(http)(mdl)(state)(mdl.slug));
+    };
+  };
+};
+
+exports.loadInitDataTask = loadInitDataTask;
+
+var Profile = function Profile(_ref) {
+  var mdl = _ref.attrs.mdl;
+  var data = {
+    authorArticles: {
+      articles: [],
+      articlesCount: 0
+    },
+    authorFavoriteArticles: {
+      articles: [],
+      articlesCount: 0
+    }
+  };
   var state = {
-    status: "loading",
+    pageStatus: "loading",
+    feedStatus: "loading",
     showFaveArticles: false,
-    limit: 20,
+    limit: 5,
     offset: 0,
     total: 0,
     error: null
   };
 
-  var onSuccess = function onSuccess(_ref) {
-    var authorArticles = _ref.authorArticles,
-        authorFavoriteArticles = _ref.authorFavoriteArticles,
-        profile = _ref.profile;
-    data.authorArticles = authorArticles;
-    data.authorFavoriteArticles = authorFavoriteArticles;
-    data.profile = profile;
-    state.status = "success";
-  };
-
-  var onError = function onError(error) {
-    console.log("error", error);
-    state.error = error;
-    state.status = "error";
-  };
-
   var loadData = function loadData(mdl) {
-    state.status = "loading";
+    var onSuccess = function onSuccess(result) {
+      state.showFaveArticles ? data.authorFavoriteArticles = result : data.authorArticles = result;
+      state.total = state.showFaveArticles ? data.authorFavoriteArticles.articlesCount : data.authorArticles.articlesCount;
+      state.feedStatus = "success";
+    };
+
+    var onError = function onError(error) {
+      console.log("error", error);
+      state.error = error;
+      state.feedStatus = "error";
+    };
+
+    state.feedStatus = "loading";
     loadDataTask(_Http["default"])(mdl)(state).fork(onError, onSuccess);
   };
 
+  var loadInitData = function loadInitData(mdl) {
+    var onSuccess = function onSuccess(_ref2) {
+      var authorArticles = _ref2.authorArticles,
+          profile = _ref2.profile;
+      data.authorArticles = authorArticles;
+      data.profile = profile;
+      state.pageStatus = "success";
+      state.feedStatus = "success";
+      state.total = data.authorArticles.articlesCount;
+    };
+
+    var onError = function onError(error) {
+      console.log("error", error);
+      state.error = error;
+      state.pageStatus = "error";
+      m.route.set("/home");
+    };
+
+    state.pageStatus = "loading";
+    loadInitDataTask(_Http["default"])(mdl)(state).fork(onError, onSuccess);
+  };
+
+  var selectFeed = function selectFeed(toShowFaveArticles) {
+    state.showFaveArticles = toShowFaveArticles;
+    state.offset = 0;
+    loadData(mdl);
+  };
+
   return {
-    oninit: function oninit(_ref2) {
-      var mdl = _ref2.attrs.mdl;
-      return loadData(mdl);
-    },
-    view: function view(_ref3) {
+    oninit: function oninit(_ref3) {
       var mdl = _ref3.attrs.mdl;
-      return m(".profile-page", state.status == "loading" && m(_components.Loader, [m("h1.logo-font", "Loading ...")]), state.status == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.status == "success" && [m(".user-info", m(".container", m(".row", m(".col-xs-12.col-md-10.offset-md-1", [m("img.user-img", {
+      return loadInitData(mdl);
+    },
+    view: function view(_ref4) {
+      var mdl = _ref4.attrs.mdl;
+      return m(".profile-page", state.pageStatus == "loading" && m(_components.Loader, [m("h1.logo-font", "Loading ...")]), state.pageStatus == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.pageStatus == "success" && [m(".user-info", m(".container", m(".row", m(".col-xs-12.col-md-10.offset-md-1", [m("img.user-img", {
         src: data.profile.image
       }), m("h4", data.profile.username), m("p", data.profile.bio), data.profile.username !== mdl.user.username ? m("button.btn.btn-sm.btn-outline-secondary.action-btn", [m("i.ion-plus-round"), " ", m.trust("&nbsp;"), "Follow ".concat(data.profile.username)]) : m("button.btn.btn-sm.btn-outline-secondary.action-btn", {
         onclick: function onclick(e) {
           return m.route.set("/settings/".concat(data.profile.username));
         }
-      }, [m("i.ion-gear-a"), " ", m.trust("&nbsp;"), "Edit Profile Settings"])])))), m(".container", m(".row", m(".col-xs-12.col-md-10.offset-md-1", [m(".articles-toggle", m("ul.nav.nav-pills.outline-active", [m("li.nav-item", m(".nav-link ".concat(!state.showFaveArticles && "active"), {
+      }, [m("i.ion-gear-a"), " ", m.trust("&nbsp;"), "Edit Profile Settings"])])))), m(".container", m(".row", m(".col-xs-12.col-md-10.offset-md-1", [m(".articles-toggle", m("ul.nav.nav-pills.outline-active", [m("li.nav-item", m("a.nav-link ".concat(!state.showFaveArticles && "active"), {
         onclick: function onclick(e) {
-          return state.showFaveArticles = false;
+          return selectFeed(false);
         }
-      }, "My Articles")), m("li.nav-item", m(".nav-link ".concat(state.showFaveArticles && "active"), {
+      }, "My Articles")), m("li.nav-item", m("a.nav-link ".concat(state.showFaveArticles && "active"), {
         onclick: function onclick(e) {
-          return state.showFaveArticles = true;
+          return selectFeed(true);
         }
-      }, "Favorited Articles"))])), state.showFaveArticles ? m(_components.Articles, {
+      }, "Favorited Articles"))])), state.feedStatus == "loading" && "Loading Articles...", state.feedStatus == "error" && m(_components.Banner, [m("h1.logo-font", "Error Loading Data: ".concat(state.error))]), state.feedStatus = "sucess" && [state.showFaveArticles ? m(_components.Articles, {
         mdl: mdl,
         data: data.authorFavoriteArticles
       }) : m(_components.Articles, {
         mdl: mdl,
         data: data.authorArticles
-      })])))]);
+      }), m(_components.Paginator, {
+        mdl: mdl,
+        state: state,
+        fetchDataFor: function fetchDataFor(offset) {
+          state.offset = offset;
+          loadData(mdl);
+        }
+      })]])))]);
     }
   };
 };
@@ -1695,24 +1903,64 @@ var _default = Register;
 exports["default"] = _default;
 });
 
-;require.register("pages/settings.js", function(exports, require, module) {
+;require.register("pages/user.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = exports.loadTask = void 0;
+exports["default"] = void 0;
 
-var loadTask = function loadTask() {};
+var _Http = _interopRequireDefault(require("Http"));
 
-exports.loadTask = loadTask;
+var _Utils = require("Utils");
 
-var Settings = function Settings(_ref) {
-  var mdl = _ref.attrs.mdl;
-  var data = JSON.parse(JSON.stringify(mdl.user));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var logout = function logout() {
+  sessionStorage.clear();
+  m.route.set("/home");
+};
+
+var submitTask = function submitTask(http) {
+  return function (mdl) {
+    return function (data) {
+      return http.putTask(mdl)("user")(data);
+    };
+  };
+};
+
+var User = function User(_ref) {
+  var _ref$attrs$mdl$user = _ref.attrs.mdl.user,
+      image = _ref$attrs$mdl$user.image,
+      username = _ref$attrs$mdl$user.username,
+      password = _ref$attrs$mdl$user.password,
+      bio = _ref$attrs$mdl$user.bio,
+      email = _ref$attrs$mdl$user.email;
+  var data = {
+    image: image,
+    username: username,
+    password: password,
+    bio: bio,
+    email: email
+  };
+
+  var submit = function submit(mdl, data) {
+    var onSuccess = function onSuccess(_ref2) {
+      var user = _ref2.user;
+      sessionStorage.setItem("user", JSON.stringify(user));
+      mdl.user = user;
+      console.log(mdl.user);
+      m.route.set("/home");
+    };
+
+    var onError = (0, _Utils.log)("error");
+    submitTask(_Http["default"])(mdl)(data).fork(onError, onSuccess);
+  };
+
   return {
-    view: function view(_ref2) {
-      var mdl = _ref2.attrs.mdl;
+    view: function view(_ref3) {
+      var mdl = _ref3.attrs.mdl;
       return m(".settings-page", m(".container.page", m(".row", m(".col-md-6.offset-md-3.col-xs-12", [m("h1.text-xs-center", "Your Settings"), m("form", m("fieldset", [m("fieldset.form-group", m("input.form-control.form-control-lg", {
         type: "text",
         placeholder: "URL of profile picture",
@@ -1727,8 +1975,7 @@ var Settings = function Settings(_ref) {
           return data.username = e.target.value;
         },
         value: data.username
-      })), m("fieldset.form-group", m("input.form-control.form-control-lg", {
-        type: "text",
+      })), m("fieldset.form-group", m("textarea.form-control.form-control-lg", {
         placeholder: "Short bio about you",
         onchange: function onchange(e) {
           return data.bio = e.target.value;
@@ -1748,12 +1995,20 @@ var Settings = function Settings(_ref) {
           return data.password = e.target.value;
         },
         value: data.password
-      }))), m("button.btn.btn-lg.btn-primary.pull-xs-right", " Update Settings ")]))]))));
+      }))), m("button.btn.btn-lg.btn-primary.pull-xs-right", {
+        onclick: function onclick(e) {
+          return submit(mdl, data);
+        }
+      }, " Update Settings "), m("button.btn.btn-outline-danger.pull-xs-right", {
+        onclick: function onclick(e) {
+          return logout(mdl, data);
+        }
+      }, "Or click here to logout.")]))]))));
     }
   };
 };
 
-var _default = Settings;
+var _default = User;
 exports["default"] = _default;
 });
 
@@ -1777,7 +2032,7 @@ var _register = _interopRequireDefault(require("./pages/register"));
 
 var _login = _interopRequireDefault(require("./pages/login"));
 
-var _settings = _interopRequireDefault(require("./pages/settings"));
+var _user = _interopRequireDefault(require("./pages/user"));
 
 var _editor = _interopRequireDefault(require("./pages/editor"));
 
@@ -1859,7 +2114,7 @@ var routes = function routes(mdl) {
       render: function render() {
         return m(_index["default"], {
           mdl: mdl
-        }, m(_settings["default"], {
+        }, m(_user["default"], {
           mdl: mdl,
           key: mdl.slug
         }));

@@ -1,5 +1,3 @@
-import { isEmpty } from "ramda"
-
 const Header = () => {
   return {
     view: ({ attrs: { mdl } }) =>
@@ -10,8 +8,39 @@ const Header = () => {
           m("a.navbar-brand", { href: "#" }, "conduit"),
           m(
             "ul.nav navbar-nav pull-xs-right",
-            isEmpty(mdl.user)
+            mdl.state.isLoggedIn()
               ? [
+                  m(
+                    "li.nav-item",
+                    m(m.route.Link, { class: "nav-link", href: "/editor" }, [
+                      m("i.ion-compose.p-5"),
+                      "New Article",
+                    ])
+                  ),
+                  m(
+                    "li.nav-item",
+                    m(
+                      m.route.Link,
+                      {
+                        class: "nav-link",
+                        href: `/settings/${mdl.user.username}`,
+                      },
+                      [m("i.ion-gear-a.p-5"), "Settings"]
+                    )
+                  ),
+                  m(
+                    "li.nav-item",
+                    m(
+                      m.route.Link,
+                      {
+                        class: "nav-link",
+                        href: `/profile/${mdl.user.username}`,
+                      },
+                      mdl.user.username
+                    )
+                  ),
+                ]
+              : [
                   m(
                     "li.nav-item",
                     m(
@@ -26,38 +55,6 @@ const Header = () => {
                       m.route.Link,
                       { class: "nav-link", href: "/login" },
                       "Login"
-                    )
-                  ),
-                ]
-              : [
-                  m(
-                    "li.nav-item",
-                    m(
-                      m.route.Link,
-                      { class: "nav-link", href: "/editor" },
-                      "New Article"
-                    )
-                  ),
-                  m(
-                    "li.nav-item",
-                    m(
-                      m.route.Link,
-                      {
-                        class: "nav-link",
-                        href: `/settings/${mdl.user.username}`,
-                      },
-                      "Settings"
-                    )
-                  ),
-                  m(
-                    "li.nav-item",
-                    m(
-                      m.route.Link,
-                      {
-                        class: "nav-link",
-                        href: `/profile/${mdl.user.username}`,
-                      },
-                      mdl.user.username
                     )
                   ),
                 ]

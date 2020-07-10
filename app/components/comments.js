@@ -10,10 +10,8 @@ const deleteCommentTask = (http) => (mdl) => (slug) => (id) =>
 
 const trimBody = over(lensProp("body"), trim)
 
-const submitTask = (http) => (mdl) => (comment) => {
-  console.log("comment", comment)
-  return http.postTask(mdl)(`articles/${mdl.slug}/comments`)({ comment })
-}
+const submitTask = (http) => (mdl) => (comment) =>
+  http.postTask(mdl)(`articles/${mdl.slug}/comments`)({ comment })
 
 const CommentForm = ({ attrs: { mdl, reload } }) => {
   const comment = { body: "" }

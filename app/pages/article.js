@@ -56,10 +56,12 @@ const Article = () => {
             ),
             m("hr"),
 
-            m(FollowFavorite, {
-              mdl,
-              data: data.article,
-            }),
+            m(".article-actions", [
+              m(FollowFavorite, {
+                mdl,
+                data: data.article,
+              }),
+            ]),
             m(Comments, {
               mdl,
               comments: data.comments,
