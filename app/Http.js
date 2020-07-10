@@ -50,8 +50,11 @@ const getUserToken = () =>
 
 const call = (_headers) => (method) => (mdl) => (url) => (body) => {
   if (["POST", "PUT", "DELETE"].includes(method) && !mdl.state.isLoggedIn()) {
-    return Task.rejected(m.route.set("/register"))
+    if (!["/login", "/register"].includes(mdl.slug)) {
+      return Task.rejected(m.route.set("/register"))
+    }
   }
+
   mdl.state.isLoading = true
   return new Task((rej, res) =>
     m

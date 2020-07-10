@@ -14,28 +14,20 @@ const Editor = ({ attrs: { mdl } }) => {
   const state = {}
 
   const initEditor = (mdl) => {
-    const onSuccess = ({ article }) => {
-      data = article
-      console.log(data)
-    }
+    const onSuccess = ({ article }) => (data = article)
 
-    const onError = (errors) => {
-      state.errors = errors
-    }
+    const onError = (errors) => (state.errors = errors)
 
-    if (mdl.slug) {
+    if (mdl.slug !== "/editor") {
       loadArticleTask(Http)(mdl)(mdl.slug).fork(onError, onSuccess)
     }
   }
 
   const submitData = (data) => {
-    const onSuccess = ({ article: { slug } }) => {
-      m.route.set(`/article/${slug}`)
-    }
+    const onSuccess = ({ article: { slug } }) => m.route.set(`/article/${slug}`)
 
-    const onError = (errors) => {
-      state.errors = errors
-    }
+    const onError = (errors) => (state.errors = errors)
+
     submitArticleTask(Http)(mdl)(data).fork(onError, onSuccess)
   }
 

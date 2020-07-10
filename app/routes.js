@@ -10,17 +10,17 @@ import Editor from "./pages/editor"
 const routes = (mdl) => {
   return {
     "/home": {
-      onmatch: ({ slug }) => {
-        mdl.slug = slug
+      onmatch: (_, b) => {
+        mdl.slug = b
       },
       render: () => m(Layout, { mdl }, m(Home, { mdl })),
     },
 
     "/editor": {
-      onmatch: ({ slug }) => {
-        mdl.slug = slug
+      onmatch: (_, b) => {
+        mdl.slug = b
       },
-      render: () => m(Layout, { mdl }, m(Editor, { mdl })),
+      render: () => m(Layout, { mdl }, m(Editor, { mdl, key: mdl.slug })),
     },
 
     "/editor/:slug": {
@@ -52,15 +52,15 @@ const routes = (mdl) => {
     },
 
     "/login": {
-      onmatch: ({ slug }) => {
-        mdl.slug = slug
+      onmatch: (_, b) => {
+        mdl.slug = b
       },
       render: () => m(Layout, { mdl }, m(Login, { mdl })),
     },
 
     "/register": {
-      onmatch: ({ slug }) => {
-        mdl.slug = slug
+      onmatch: (_, b) => {
+        mdl.slug = b
       },
       render: () => m(Layout, { mdl }, m(Register, { mdl })),
     },

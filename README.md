@@ -18,4 +18,4 @@ To get the frontend running locally:
 
 - Clone this repo
 - Run $ `yarn install` to install all the required dependencies
-- Run $ `yarn start` to start the local server and JS build
+- Run $ `yarn fresh` to start the local server and JS build
