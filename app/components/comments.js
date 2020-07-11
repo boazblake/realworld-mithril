@@ -70,13 +70,24 @@ const Comment = () => {
         m(".card-footer", [
           m(
             m.route.Link,
-            { class: "comment-author" },
-            m("img.comment-author-img", { src: sanitizeImg(image) })
+            {
+              href: `/profile/${username}`,
+              class: "comment-author m-5",
+            },
+            m("img.comment-author-img", {
+              src: sanitizeImg(image),
+            })
           ),
-          " ",
-          m.trust("&nbsp;"),
-          " ",
-          m(m.route.Link, { class: "comment-author" }, username),
+
+          m(
+            m.route.Link,
+            {
+              href: `/profile/${username}`,
+              class: "comment-author m-5",
+            },
+            username
+          ),
+
           m("span.date-posted", createdAt),
           username == mdl.user.username &&
             m("span.mod-options", [
