@@ -1,5 +1,5 @@
 import Http from "Http"
-import { log } from "Utils"
+import { log, sanitizeImg } from "Utils"
 import { Banner, Loader, Articles, Paginator } from "components"
 
 const followAuthorUrl = (author) => `profiles/${author}/follow`
@@ -129,7 +129,7 @@ const Profile = ({ attrs: { mdl } }) => {
               m(
                 ".row",
                 m(".col-xs-12.col-md-10.offset-md-1", [
-                  m("img.user-img", { src: data.profile.image }),
+                  m("img.user-img", { src: sanitizeImg(data.profile.image) }),
                   m("h4", data.profile.username),
                   m("p", data.profile.bio),
                   data.profile.username !== mdl.user.username

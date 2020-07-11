@@ -1,5 +1,5 @@
 import Http from "Http"
-import { log } from "Utils"
+import { log, sanitizeImg } from "Utils"
 
 const favoriteArticleUrl = (slug) => `articles/${slug}/favorite`
 const favoriteArticleTask = (http) => (mdl) => (slug) =>
@@ -27,8 +27,11 @@ const ArticlePreview = ({ attrs: { mdl, article } }) => {
         m(".article-meta", [
           m(
             m.route.Link,
-            { href: `/profile/${data.username}`, options: { replace: true } },
-            m("img", { src: data.image })
+            {
+              href: `/profile/${data.author.username}`,
+              options: { replace: true },
+            },
+            m("img", { src: sanitizeImg(data.author.image) })
           ),
 
           m(".info", [
@@ -36,10 +39,10 @@ const ArticlePreview = ({ attrs: { mdl, article } }) => {
               m.route.Link,
               {
                 class: "author",
-                href: `/profile/${data.username}`,
+                href: `/profile/${data.author.username}`,
                 options: { replace: true },
               },
-              data.username
+              data.author.username
             ),
             m("span.date", data.createdAt),
           ]),

@@ -1,5 +1,5 @@
 import Http from "Http"
-import { log } from "Utils"
+import { log, sanitizeImg } from "Utils"
 
 const deleteArticleUrl = (slug) => `articles/${slug}`
 const favoriteArticleUrl = (slug) => `articles/${slug}/favorite`
@@ -67,7 +67,7 @@ export const FollowFavorite = ({ attrs: { mdl, data } }) => {
         m(
           m.route.Link,
           { href: `profile/${username}` },
-          m("img", { src: image })
+          m("img", { src: sanitizeImg(image) })
         ),
         m(".info", [
           m(

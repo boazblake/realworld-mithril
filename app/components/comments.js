@@ -1,5 +1,5 @@
 import Http from "Http"
-import { log } from "Utils"
+import { log, sanitizeImg } from "Utils"
 import { lensProp, over, trim } from "ramda"
 
 const getCommentsTask = (http) => (mdl) => (slug) =>
@@ -40,7 +40,7 @@ const CommentForm = ({ attrs: { mdl, reload } }) => {
           })
         ),
         m(".card-footer", [
-          m("img.comment-author-img", { src: mdl.user.image }),
+          m("img.comment-author-img", { src: sanitizeImg(mdl.user.image) }),
           m(
             "button.btn.btn-sm.btn-primary",
             { onclick: (e) => submit(comment) },
@@ -71,7 +71,7 @@ const Comment = () => {
           m(
             m.route.Link,
             { class: "comment-author" },
-            m("img.comment-author-img", { src: image })
+            m("img.comment-author-img", { src: sanitizeImg(image) })
           ),
           " ",
           m.trust("&nbsp;"),
