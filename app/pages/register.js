@@ -1,10 +1,8 @@
 import Http from "Http"
+import { errorViewModel } from "Utils"
 
 const registerTask = (http) => (mdl) => (user) =>
   http.postTask(mdl)("users")({ user })
-
-const errorViewModel = (err) =>
-  Object.keys(err).map((k) => ({ key: k, values: err[k] }))
 
 const Register = () => {
   const state = { errors: [] }
@@ -22,10 +20,7 @@ const Register = () => {
       console.log("success", user)
     }
 
-    const onError = (errors) => {
-      state.errors = errorViewModel(errors)
-      console.log(errors)
-    }
+    const onError = (errors) => (state.errors = errorViewModel(errors))
 
     state.isSubmitted = true
     registerTask(Http)(mdl)(data).fork(onError, onSuccess)

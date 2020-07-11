@@ -1,5 +1,5 @@
 import Http from "Http"
-import { log, sanitizeImg } from "Utils"
+import { log, sanitizeImg, errorViewModel } from "Utils"
 import { lensProp, over, trim } from "ramda"
 
 const getCommentsTask = (http) => (mdl) => (slug) =>
@@ -15,11 +15,16 @@ const submitTask = (http) => (mdl) => (comment) =>
 
 const CommentForm = ({ attrs: { mdl, reload } }) => {
   const comment = { body: "" }
+  const state = { errors: [] }
 
-  const onError = log("Error with form ")
+  const onError = (errors) => {
+    state.errors = errorViewModel(errors)
+    console.log("Error with form ", state)
+  }
 
   const onSuccess = () => {
     comment.body = ""
+    state.errors = []
     reload()
   }
 
@@ -28,7 +33,7 @@ const CommentForm = ({ attrs: { mdl, reload } }) => {
 
   return {
     oninit: () => (comment.body = ""),
-    view: ({ attrs: { mdl } }) =>
+    view: ({ attrs: { mdl } }) => [
       m("form.card.comment-form", [
         m(
           ".card-block",
@@ -41,6 +46,7 @@ const CommentForm = ({ attrs: { mdl, reload } }) => {
         ),
         m(".card-footer", [
           m("img.comment-author-img", { src: sanitizeImg(mdl.user.image) }),
+
           m(
             "button.btn.btn-sm.btn-primary",
             { onclick: (e) => submit(comment) },
@@ -48,6 +54,10 @@ const CommentForm = ({ attrs: { mdl, reload } }) => {
           ),
         ]),
       ]),
+      state.errors.map((e) =>
+        e.values.map((err) => m("p.error-messages", `${e.key} ${err}`))
+      ),
+    ],
   }
 }
 
@@ -104,7 +114,7 @@ export const Comments = ({ attrs: { mdl } }) => {
   const loadComments = (mdl) => {
     const onSuccess = ({ comments }) => (data.comments = comments)
 
-    const onError = log("error with coomments")
+    const onError = log("error with comments")
 
     getCommentsTask(Http)(mdl)(mdl.slug).fork(onError, onSuccess)
   }
@@ -112,7 +122,7 @@ export const Comments = ({ attrs: { mdl } }) => {
   const deleteComment = (id) => {
     const onSuccess = ({ comments }) => (data.comments = comments)
 
-    const onError = log("error with coomments")
+    const onError = log("error with comments")
 
     deleteCommentTask(Http)(mdl)(mdl.slug)(id)
       .chain((x) => getCommentsTask(Http)(mdl)(mdl.slug))
