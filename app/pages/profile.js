@@ -204,7 +204,7 @@ const Profile = ({ attrs: { mdl } }) => {
                   m(Banner, [
                     m("h1.logo-font", `Error Loading Data: ${state.error}`),
                   ]),
-                (state.feedStatus = "sucess" && [
+                state.feedStatus == "success" && [
                   state.showFaveArticles
                     ? m(Articles, { mdl, data: data.authorFavoriteArticles })
                     : m(Articles, { mdl, data: data.authorArticles }),
@@ -217,7 +217,7 @@ const Profile = ({ attrs: { mdl } }) => {
                       loadData(mdl)
                     },
                   }),
-                ]),
+                ],
               ])
             )
           ),
