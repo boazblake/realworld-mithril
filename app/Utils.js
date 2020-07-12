@@ -4,7 +4,7 @@ export const log = (m) => (v) => {
 }
 
 export const sanitizeImg = (url) =>
-  url && url.match(/\.(jpeg|jpg|gif|png|svg)$/) ? url : null
+  url && url.match(/\.(jpeg|jpg|gif|png|svg)$/) ? url : ""
 
 export const errorViewModel = (err) =>
   Object.keys(err).map((k) => ({ key: k, values: err[k] }))

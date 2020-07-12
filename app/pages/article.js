@@ -52,7 +52,7 @@ const Article = () => {
           m(".container.page", [
             m(
               ".row.article-content",
-              m(".col-md-12.text-justify", m.trust(md(data.article.body)))
+              m(".col-xs-12.text-justify", m.trust(md(data.article.body)))
             ),
             m("hr"),
 
