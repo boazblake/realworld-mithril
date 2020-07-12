@@ -4,7 +4,14 @@ const footer = () => {
       m(
         "footer",
         m("div", { class: "container" }, [
-          m("a", { class: "logo-font", href: "/" }, "conduit"),
+          m(
+            "a",
+            {
+              class: "logo-font",
+              href: "https://github.com/gothinkster/realworld",
+            },
+            "conduit"
+          ),
           m("span", { class: "attribution" }, [
             " An interactive learning project from ",
             m("a", { href: "https://thinkster.io" }, "Thinkster"),
