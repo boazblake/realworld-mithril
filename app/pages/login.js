@@ -4,22 +4,25 @@ export const loginTask = (http) => (mdl) => (user) =>
   http.postTask(mdl)("users/login")({ user })
 
 const Login = () => {
-  const state = { errors: {} }
+  const state = { errors: {}, disabled: false }
   const data = {
     email: "",
     password: "",
   }
 
   const onSubmit = (mdl) => {
+    state.disabled = true
     const onSuccess = ({ user }) => {
       sessionStorage.setItem("token", `Token ${user.token}`)
       sessionStorage.setItem("user", JSON.stringify(user))
       mdl.user = user
+      state.disabled = false
       m.route.set("/home")
     }
 
     const onError = (errors) => {
       state.errors = errors
+      state.disabled = false
       console.log(state.errors)
     }
 
@@ -53,6 +56,7 @@ const Login = () => {
                   "fieldset.form-group",
                   m("input.form-control.form-control-lg", {
                     type: "text",
+                    disabled: state.disabled,
                     placeholder: "email",
                     onchange: (e) => (data.email = e.target.value),
                     value: data.email,
@@ -65,6 +69,7 @@ const Login = () => {
                   "fieldset.form-group",
                   m("input.form-control.form-control-lg", {
                     type: "password",
+                    disabled: state.disabled,
                     placeholder: "password",
                     onchange: (e) => (data.password = e.target.value),
                     value: data.password,

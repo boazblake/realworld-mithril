@@ -5,7 +5,7 @@ const registerTask = (http) => (mdl) => (user) =>
   http.postTask(mdl)("users")({ user })
 
 const Register = () => {
-  const state = { errors: [] }
+  const state = { errors: [], disabled: false }
   const data = {
     username: "",
     email: "",
@@ -13,14 +13,19 @@ const Register = () => {
   }
 
   const onSubmit = (mdl) => {
+    state.disabled = true
     const onSuccess = ({ user }) => {
       mdl.user = user
       sessionStorage.setItem("token", `Token ${user.token}`)
+      state.disabled = false
       m.route.set("/home")
       console.log("success", user)
     }
 
-    const onError = (errors) => (state.errors = errorViewModel(errors))
+    const onError = (errors) => {
+      state.disabled = false
+      state.errors = errorViewModel(errors)
+    }
 
     state.isSubmitted = true
     registerTask(Http)(mdl)(data).fork(onError, onSuccess)
@@ -58,6 +63,7 @@ const Register = () => {
                   "fieldset.form-group",
                   m("input.form-control.form-control-lg", {
                     type: "text",
+                    disabled: state.disabled,
                     placeholder: "Your Name",
                     onchange: (e) => (data.username = e.target.value),
                     value: data.username,
@@ -68,6 +74,7 @@ const Register = () => {
                   "fieldset.form-group",
                   m("input.form-control.form-control-lg", {
                     type: "text",
+                    disabled: state.disabled,
                     placeholder: "email",
                     onchange: (e) => (data.email = e.target.value),
                     value: data.email,
@@ -77,6 +84,7 @@ const Register = () => {
                   "fieldset.form-group",
                   m("input.form-control.form-control-lg", {
                     type: "password",
+                    disabled: state.disabled,
                     placeholder: "password",
                     onchange: (e) => (data.password = e.target.value),
                     value: data.password,

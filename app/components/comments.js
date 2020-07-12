@@ -15,16 +15,18 @@ const submitTask = (http) => (mdl) => (comment) =>
 
 const CommentForm = ({ attrs: { mdl, reload } }) => {
   const comment = { body: "" }
-  const state = { errors: [] }
+  const state = { errors: [], disabled: false }
 
   const onError = (errors) => {
     state.errors = errorViewModel(errors)
     console.log("Error with form ", state)
+    state.disabled = false
   }
 
   const onSuccess = () => {
     comment.body = ""
     state.errors = []
+    state.disabled = false
     reload()
   }
 
@@ -41,6 +43,7 @@ const CommentForm = ({ attrs: { mdl, reload } }) => {
             rows: 3,
             placeholder: "Write a comment ...",
             onchange: (e) => (comment.body = e.target.value),
+            disabled: state.disabled,
             value: comment.body,
           })
         ),
@@ -49,7 +52,12 @@ const CommentForm = ({ attrs: { mdl, reload } }) => {
 
           m(
             "button.btn.btn-sm.btn-primary",
-            { onclick: (e) => submit(comment) },
+            {
+              onclick: (e) => {
+                state.disabled = true
+                submit(comment)
+              },
+            },
             " Post Comment "
           ),
         ]),
