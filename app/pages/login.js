@@ -10,7 +10,8 @@ const Login = () => {
     password: "",
   }
 
-  const onSubmit = (mdl) => {
+  const onSubmit = (mdl, e) => {
+    e.preventDefault()
     state.disabled = true
     const onSuccess = ({ user }) => {
       sessionStorage.setItem("token", `Token ${user.token}`)
@@ -78,7 +79,7 @@ const Login = () => {
                 ),
                 m(
                   "button.btn.btn-lg.btn-primary.pull-xs-right",
-                  { type: "submit", onclick: (e) => onSubmit(mdl) },
+                  { type: "submit", onclick: (e) => onSubmit(mdl, e) },
                   "Login"
                 ),
               ]),

@@ -12,4 +12,4 @@ export const sanitizeImg = (url) =>
     : "https://static.productionready.io/images/smiley-cyrus.jpg"
 
 export const errorViewModel = (err) =>
-  Object.keys(err).map((k) => ({ key: k, values: err[k] }))
+  Object.keys(err).map((k) => ({ key: k.toUpperCase(), values: err[k] }))

@@ -12,7 +12,9 @@ const Register = () => {
     password: "",
   }
 
-  const onSubmit = (mdl) => {
+  const onSubmit = (mdl, e) => {
+    e.preventDefault()
+    console.log(mdl)
     state.disabled = true
     const onSuccess = ({ user }) => {
       mdl.user = user
@@ -92,7 +94,7 @@ const Register = () => {
                 ),
                 m(
                   "button.btn.btn-lg.btn-primary.pull-xs-right",
-                  { type: "submit", onclick: (e) => onSubmit(mdl) },
+                  { type: "submit", onclick: (e) => onSubmit(mdl, e) },
                   "Sign Up"
                 ),
               ]),
